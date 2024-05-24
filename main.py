@@ -9,7 +9,7 @@ class App:
         pg.init()
         pg.display.set_mode((640, 480), pg.OPENGL | pg.DOUBLEBUF)
         self.clock = pg.time.Clock()
-        glClearColor(0.1, 0.2, 0.2, 1)
+        glClearColor(.1, .2, .2, 1)
         self.mainLoop()
 
     def mainLoop(self):
