@@ -5,10 +5,12 @@ import sys
 
 import pygame
 
+from geometry.areia import AreiaGeometry
 from geometry.bal import BalGeometry
 from geometry.berlin_massa import BerlinMassaGeometry
 from geometry.berlin_recheio import BerlinRecheioGeometry
 from geometry.calcao import CalcaoGeometry
+from geometry.madeira_bancos import MadeiraGeometry
 from geometry.panamafita import PanamaFitaGeometry
 from geometry.parteAmarela import parteAmarela
 from geometry.parteAzul import parteAzul
@@ -25,6 +27,7 @@ from core_ext.renderer import Renderer
 from core_ext.scene import Scene
 from core_ext.texture import Texture
 from extras.movement_rig import MovementRig
+from geometry.vigas_banco import VigasGeometry
 from material.texture import TextureMaterial
 
 
@@ -57,7 +60,22 @@ class Example(Base):
         self.bola_Berlim.translate(0.7,0.27,0)
         self.scene.add(self.bola_Berlim)
 
+        areia_plano = AreiaGeometry()
+        material1 = TextureMaterial(texture=Texture(file_name="Objetos/Cena1/Plano/textures/daniel-straub-n5HOJGtYt4Q-unsplash.jpg"))
+        self.areia = Mesh(areia_plano, material1)
+        self.areia.scale(0.5)
+        self.areia.translate(0,-4,0)
 
+        self.scene.add(self.areia)
+
+        madeira_bancos = MadeiraGeometry()
+        material1 = TextureMaterial(texture=Texture(file_name="images/bench.jpg"))
+        self.bancos = Mesh(madeira_bancos, material1)
+        vigas_bancos = VigasGeometry()
+        material1 = TextureMaterial(texture=Texture(file_name="images/vigas.jpeg"))
+        self.bancos.add(Mesh(vigas_bancos, material1))
+        self.bancos.translate(0.7, 0.27, 0)
+        self.scene.add(self.bancos)
 
         bola = parteVermelha()
         material1 = TextureMaterial(texture=Texture(file_name="images/vermelho.jpg"))
@@ -90,12 +108,6 @@ class Example(Base):
         self.bola_mesh.scale(0.5)
         self.scene.add(self.bola_mesh)
 
-        baliza = BalGeometry()
-        material1 = TextureMaterial(texture=Texture(file_name="images/campo.png"),property_dict={"doubleSide":True})
-        self.balizaScene= Mesh(baliza,material1)
-        self.balizaScene.rotate_y(90)
-        self.scene.add(self.balizaScene)
-
         calcao_geometria = CalcaoGeometry()
         material1 = TextureMaterial(texture=Texture(file_name="images/textura_calcao.png"))
         self.calcao = Mesh(calcao_geometria,material1)
@@ -118,7 +130,7 @@ class Example(Base):
  
         grass_geometry = RectangleGeometry(width=100, height=100)
         grass_material = TextureMaterial(
-            texture=Texture(file_name="images/sand.jpg"),
+            texture=Texture(file_name="Objetos/Cena1/Plano/textures/daniel-straub-n5HOJGtYt4Q-unsplash.jpg"),
             property_dict={"repeatUV": [50, 50]}
         )
         grass = Mesh(grass_geometry, grass_material)
@@ -127,8 +139,14 @@ class Example(Base):
         self.camera_move = 0.1
         self.scene.add(self.rig)
         self.object = self.bola_mesh
+
+        baliza = BalGeometry()
+        material1 = TextureMaterial(texture=Texture(file_name="images/campo.png"), property_dict={"doubleSide": True})
+        self.balizaScene = Mesh(baliza, material1)
+        self.balizaScene.rotate_y(90)
+        self.scene.add(self.balizaScene)
         print("Troca de objeto no 1, 2, 3 e 4.")
-        print("Camera h, j, k, l, u, n.")
+        print("Camera h, j, k, l, u, n, t, g.")
         print("Ojeto w, a, s, d, q, e, r, f, z, x.")
 
     def update(self):
@@ -146,6 +164,14 @@ class Example(Base):
             self.camera.translate(0,0,-self.camera_move)
         if "n" in self.input.key_pressed_list:
             self.camera.translate(0,0,self.camera_move)
+        if "t" in self.input.key_pressed_list:
+            self.camera.rotate_x(-0.01)
+        if "g" in self.input.key_pressed_list:
+            self.camera.rotate_x(0.01)
+        if "m" in self.input.key_pressed_list:
+            self.camera.rotate_y(-0.01)
+        if "," in self.input.key_pressed_list:
+            self.camera.rotate_y(0.01)
         if "1" in self.input.key_pressed_list:
             self.object = self.bola_mesh
         if "2" in self.input.key_pressed_list:
