@@ -1,5 +1,4 @@
 PyOpenGL
 PyOpenGL_accelerate
-pyrr
 numpy
 pygame

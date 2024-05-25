@@ -1,248 +1,181 @@
-import pygame as pg
-from OpenGL.GL import *
 import numpy as np
-import ctypes
-from OpenGL.GL.shaders import compileProgram, compileShader
-import pyrr
+import math
+import pathlib
+import sys
+
+import pygame
+
+from geometry.bal import BalGeometry
+from geometry.berlin_massa import BerlinMassaGeometry
+from geometry.berlin_recheio import BerlinRecheioGeometry
+from geometry.calcao import CalcaoGeometry
+from geometry.panamafita import PanamaFitaGeometry
+from geometry.parteAmarela import parteAmarela
+from geometry.parteAzul import parteAzul
+from geometry.parteBranca import parteBranca
+from geometry.panama import PanamaGeometry
+from geometry.parteVerde import parteVerde
+from geometry.parteVermelha import parteVermelha
+from geometry.sphere import SphereGeometry
+from geometry.rectangle import RectangleGeometry
+from core.base import Base
+from core_ext.camera import Camera
+from core_ext.mesh import Mesh
+from core_ext.renderer import Renderer
+from core_ext.scene import Scene
+from core_ext.texture import Texture
+from extras.movement_rig import MovementRig
+from material.texture import TextureMaterial
 
 
-class Cube:
-    def __init__(self, position, eulers):
-        self.position = np.array(position, dtype=np.float32)
-        self.eulers = np.array(eulers, dtype=np.float32)
+class Example(Base):
+    """
+    Render the axes and the rotated xy-grid.
+    Add box movement: WASDRF(move), QE(turn), TG(look).
+    """
+    def initialize(self):
+        print("Initializing program...")
+        self.renderer = Renderer()
+        self.scene = Scene()
+        self.camera = Camera(aspect_ratio=800/600)
+        self.camera.set_position([0.5, 1, 3])
+
+        self.rig = MovementRig()
+        self.rig.set_position([0, 0.5, -0.5])
+
+        sky_geometry = SphereGeometry(radius=50)
+        sky_material = TextureMaterial(texture=Texture(file_name="images/sky.jpg"))
+        sky = Mesh(sky_geometry, sky_material)
+        self.scene.add(sky)
+
+        bola_berlim_massa = BerlinMassaGeometry()
+        material1 = TextureMaterial(texture=Texture(file_name="images/berlin_massa.jpg"))
+        self.bola_Berlim = Mesh(bola_berlim_massa, material1)
+        bola_berlim_recheio = BerlinRecheioGeometry()
+        material1 = TextureMaterial(texture=Texture(file_name="images/berlin_recheio.png"))
+        self.bola_Berlim.add(Mesh(bola_berlim_recheio,material1))
+        self.bola_Berlim.translate(0.7,0.27,0)
+        self.scene.add(self.bola_Berlim)
 
 
-class CubeMesh:
 
-    def __init__(self):
-        #Temos de organizar os vertices ao contrário do sentido dos ponteiros do relógio
-        #x, y, z, s, t
-        self.vertices = (
-            # Face 1 Triangulo 1
-            -0.5, -0.5, -0.5, 0, 0,     #vertix 1
-             0.5, -0.5, -0.5, 1, 0,     #vertix 2
-             0.5,  0.5, -0.5, 1, 1,     #vertix 3
+        bola = parteVermelha()
+        material1 = TextureMaterial(texture=Texture(file_name="images/vermelho.jpg"))
+        mesh1 = Mesh(bola, material1)
+        mesh1.set_position([0,0.8,0])
+        self.bola_mesh = mesh1
 
-            # Face 1 Triangulo 2
-             0.5,  0.5, -0.5, 1, 1,     #vertix 1
-            -0.5,  0.5, -0.5, 0, 1,     #vertix 2
-            -0.5, -0.5, -0.5, 0, 0,     #vertix 3
 
-            # Face 2 Triangulo 1
-            -0.5, -0.5,  0.5, 0, 0,     #vertix 1
-             0.5, -0.5,  0.5, 1, 0,     #vertix 2
-             0.5,  0.5,  0.5, 1, 1,     #vertix 3
+        bola = parteAzul()
+        material1 = TextureMaterial(texture=Texture(file_name="images/azul.jpg"))
+        mesh1 = Mesh(bola, material1)
+        self.bola_mesh.add(mesh1)
 
-            # Face 2 Triangulo 2
-             0.5,  0.5,  0.5, 1, 1,     #vertix 1
-            -0.5,  0.5,  0.5, 0, 1,     #vertix 2
-            -0.5, -0.5,  0.5, 0, 0,     #vertix 3
 
-            # Face 3 Triangulo 1
-            -0.5,  0.5,  0.5, 1, 0,     #vertix 1
-            -0.5,  0.5, -0.5, 1, 1,     #vertix 2
-            -0.5, -0.5, -0.5, 0, 1,     #vertix 3
+        bola = parteVerde()
+        material1 = TextureMaterial(texture=Texture(file_name="images/verde.jpg"))
+        mesh1 = Mesh(bola, material1)
+        self.bola_mesh.add(mesh1)
 
-            # Face 3 Triangulo 2
-            -0.5, -0.5, -0.5, 0, 1,     #vertix 1
-            -0.5, -0.5,  0.5, 0, 0,     #vertix 2
-            -0.5,  0.5,  0.5, 1, 0,     #vertix 3
 
-            # Face 4 Triangulo 1
-             0.5,  0.5,  0.5, 1, 0,     #vertix 1
-             0.5,  0.5, -0.5, 1, 1,     #vertix 2
-             0.5, -0.5, -0.5, 0, 1,     #vertix 3
+        bola = parteBranca()
+        material1 = TextureMaterial(texture=Texture(file_name="images/white.png"))
+        mesh1 = Mesh(bola, material1)
+        self.bola_mesh.add(mesh1)
 
-            # Face 4 Triangulo 2
-             0.5, -0.5, -0.5, 0, 1,     #vertix 1
-             0.5, -0.5,  0.5, 0, 0,     #vertix 2
-             0.5,  0.5,  0.5, 1, 0,     #vertix 3
+        bola = parteAmarela()
+        material1 = TextureMaterial(texture=Texture(file_name="images/amarelo.jpg"))
+        mesh1 = Mesh(bola, material1)
+        self.bola_mesh.add(mesh1)
+        self.bola_mesh.scale(0.5)
+        self.scene.add(self.bola_mesh)
 
-            # Face 5 Triangulo 1
-            -0.5, -0.5, -0.5, 0, 1,     #vertix 1
-             0.5, -0.5, -0.5, 1, 1,     #vertix 2
-             0.5, -0.5,  0.5, 1, 0,     #vertix 3
+        baliza = BalGeometry()
+        material1 = TextureMaterial(texture=Texture(file_name="images/campo.png"),property_dict={"doubleSide":True})
+        self.balizaScene= Mesh(baliza,material1)
+        self.balizaScene.rotate_y(90)
+        self.scene.add(self.balizaScene)
 
-            # Face 5 Triangulo 2
-             0.5, -0.5,  0.5, 1, 0,     #vertix 1
-            -0.5, -0.5,  0.5, 0, 0,     #vertix 2
-            -0.5, -0.5, -0.5, 0, 1,     #vertix 3
+        calcao_geometria = CalcaoGeometry()
+        material1 = TextureMaterial(texture=Texture(file_name="images/textura_calcao.png"))
+        self.calcao = Mesh(calcao_geometria,material1)
+        self.calcao.scale(0.4)
+        self.calcao.translate(-0.1,0.05,-1)
+        self.scene.add(self.calcao)
 
-            # Face 6 Triangulo 1
-            -0.5,  0.5, -0.5, 0, 1,     #vertix 1
-             0.5,  0.5, -0.5, 1, 1,     #vertix 2
-             0.5,  0.5,  0.5, 1, 0,     #vertix 3
-
-            # Face 6 Triangulo 2
-             0.5,  0.5,  0.5, 1, 0,     #vertix 1
-            -0.5,  0.5,  0.5, 0, 0,     #vertix 2
-            -0.5,  0.5, -0.5, 0, 1      #vertix 3
+        flipflop = PanamaGeometry()
+        material1 = TextureMaterial(texture=Texture(file_name="images/panamatexture.jpeg"))
+        mesh2 = Mesh(flipflop, material1)
+        mesh2.set_position([0,2,0])
+        self.chapeu_mesh2 = mesh2
+        fita = PanamaFitaGeometry()
+        material1 = TextureMaterial(texture=Texture(file_name="images/panamafitatexture.jpg"))
+        self.chapeu_mesh2.add(Mesh(fita, material1))
+        self.chapeu_mesh2.scale(0.6)
+        self.chapeu_mesh2.translate(0.1,-0.7,0)
+        self.chapeu_mesh2.rotate_z(-0.1)
+        self.scene.add(self.chapeu_mesh2)
+ 
+        grass_geometry = RectangleGeometry(width=100, height=100)
+        grass_material = TextureMaterial(
+            texture=Texture(file_name="images/sand.jpg"),
+            property_dict={"repeatUV": [50, 50]}
         )
+        grass = Mesh(grass_geometry, grass_material)
+        grass.rotate_x(-math.pi/2)
+        self.scene.add(grass)
+        self.camera_move = 0.1
+        self.scene.add(self.rig)
+        self.object = self.bola_mesh
+        print("Troca de objeto no 1, 2, 3 e 4.")
+        print("Camera h, j, k, l, u, n.")
+        print("Ojeto w, a, s, d, q, e, r, f, z, x.")
 
-        self.vertices = np.array(self.vertices, dtype=np.float32)
-
-        self.vertex_count = len(self.vertices) // 5
-
-        self.vao = glGenVertexArrays(1)
-        glBindVertexArray(self.vao) #Irá definir os vertices
-
-        # Guarda num buffer inbutido no openGL os vertices em bytes e defina a forma de acessá-los (GL_STATIC_DRAW)
-        self.vbo = glGenBuffers(1)
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
-        glBufferData(GL_ARRAY_BUFFER, self.vertices.nbytes, self.vertices, GL_STATIC_DRAW)
-
-        #Posição dos vertices
-        glEnableVertexAttribArray(0)
-        #24 bytes para cada vertice (cada ponto são 4 bytes logo 6*4)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(0))
-
-        glEnableVertexAttribArray(1)
-        # ctypes.c_void_p(12)
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(12))
-
-
-
-    #Limpar a memoria utilizada do triangulo
-    def destroy(self):
-        glDeleteVertexArrays(1, (self.vao,))
-        glDeleteBuffers(1, (self.vbo,))
-
-
-class Material:
-    #Coordenada da textura S(esquerda(0) e direita(1)) e T(cima(0) e baixo(1))
-    def __init__(self, filepath):
-        self.texture = glGenTextures(1)
-        glBindTexture(GL_TEXTURE_2D, self.texture)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST) #Quando estiver a diminuir a textura
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) #Quando estiver a aumentar a textura
-
-        image = pg.image.load(filepath).convert_alpha()
-        image_width, image_height = image.get_rect().size
-        #Converter a imagem do pygame para OpenGL
-        image_data = pg.image.tostring(image, "RGBA")
-        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA, image_width, image_height, 0,GL_RGBA, GL_UNSIGNED_BYTE, image_data)
-        glGenerateMipmap(GL_TEXTURE_2D)
-
-    def use(self):
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.texture)
-
-    def destroy(self):
-        glDeleteTextures(1, (self.texture,))
-
-
-class App:
-
-    def __init__(self):
-
-        pg.init()
-        pg.display.set_mode((840, 620), pg.OPENGL | pg.DOUBLEBUF)
-        self.clock = pg.time.Clock()
-        glClearColor(.1, .2, .2, 1)
-        glEnable(GL_BLEND)
-        glEnable(GL_DEPTH_TEST)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        self.shader = self.createShader("shaders/vertex.txt", "shaders/fragment.txt")
-        glUseProgram(self.shader)
-        glUniform1i(glGetUniformLocation(self.shader, "imageTexture"), 0)
-
-        self.cube = Cube(
-            position=[0, 0, -3],
-            eulers=[0, 0, 0]
-        )
-
-        self.cube_mesh = CubeMesh()
-
-        self.extreme_texture = Material("gfx/extreme.png")
-
-        projection_transform = pyrr.matrix44.create_perspective_projection(
-            fovy=45,
-            aspect=840/620,
-            near=.1,
-            far=10,
-            dtype=np.float32
-        )
-
-        glUniformMatrix4fv(
-            glGetUniformLocation(self.shader, "projection"),
-            1, GL_FALSE, projection_transform
-        )
-
-        self.modelMatrixLocation = glGetUniformLocation(self.shader, "model")
-
-        self.mainLoop()
-
-    def createShader(self, vertexFilepath, fragmentFilepath):
-
-        with open(vertexFilepath, 'r') as f:
-            vertex_src = f.readlines()
-
-        with open(fragmentFilepath, 'r') as f:
-            fragment_src = f.readlines()
-
-        shader = compileProgram(
-            compileShader(vertex_src, GL_VERTEX_SHADER),
-            compileShader(fragment_src, GL_FRAGMENT_SHADER),
-        )
-        return shader
-
-    def mainLoop(self):
-
-        running = True
-
-        while running:
-
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    running = False
-
-            #Update cube x=0 y=2 z=1
-            self.cube.eulers[2] += 0.2
-            if self.cube.eulers[2] > 360:
-                self.cube.eulers[2] -= 360
-
-            #Refresh screen
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
-            glUseProgram(self.shader)
-            self.extreme_texture.use()
-
-            model_transform = pyrr.matrix44.create_identity(dtype=np.float32)
-
-            #Rotate around origin
-            model_transform = pyrr.matrix44.multiply(
-                m1=model_transform,
-                m2=pyrr.matrix44.create_from_eulers(
-                    eulers=np.radians(self.cube.eulers),
-                    dtype=np.float32
-                )
-            )
-
-            #Define a posicao
-            model_transform = pyrr.matrix44.multiply(
-                m1=model_transform,
-                m2=pyrr.matrix44.create_from_translation(
-                    vec=self.cube.position,
-                    dtype=np.float32
-                )
-            )
-
-            glUniformMatrix4fv(self.modelMatrixLocation, 1, GL_FALSE, model_transform)
-            glBindVertexArray(self.cube_mesh.vao)
-            glDrawArrays(GL_TRIANGLES, 0, self.cube_mesh.vertex_count)
-
-            pg.display.flip()
-            self.clock.tick(60)
-        self.quit()
-
-    def quit(self):
-        self.cube_mesh.destroy()
-        self.extreme_texture.destroy()
-        glDeleteProgram(self.shader)
-        pg.quit()
+    def update(self):
+        self.rig.update(self.input, self.delta_time)
+        self.renderer.render(self.scene, self.camera)
+        if "h" in self.input.key_pressed_list:
+            self.camera.translate(-self.camera_move,0,0)
+        if "j" in self.input.key_pressed_list:
+            self.camera.translate(0,-self.camera_move,0)
+        if "k" in self.input.key_pressed_list:
+            self.camera.translate(0,self.camera_move,0)
+        if "l" in self.input.key_pressed_list:
+            self.camera.translate(self.camera_move,0,0)
+        if "u" in self.input.key_pressed_list:
+            self.camera.translate(0,0,-self.camera_move)
+        if "n" in self.input.key_pressed_list:
+            self.camera.translate(0,0,self.camera_move)
+        if "1" in self.input.key_pressed_list:
+            self.object = self.bola_mesh
+        if "2" in self.input.key_pressed_list:
+            self.object = self.chapeu_mesh2
+        if "3" in self.input.key_pressed_list:
+            self.object = self.bola_Berlim
+        if "4" in self.input.key_pressed_list:
+            self.object = self.calcao
+        if "a" in self.input.key_pressed_list:
+            self.object.translate(-0.1,0,0)
+        if "w" in self.input.key_pressed_list:
+            self.object.translate(0,0,-0.1)
+        if "d" in self.input.key_pressed_list:
+            self.object.translate(0.1,0,0)
+        if "s" in self.input.key_pressed_list:
+            self.object.translate(0,0,0.1)
+        if "r" in self.input.key_pressed_list:
+            self.object.rotate_x(0.01)
+        if "f" in self.input.key_pressed_list:
+            self.object.rotate_x(-0.01)
+        if "z" in self.input.key_pressed_list:
+            self.object.rotate_z(0.01)
+        if "x" in self.input.key_pressed_list:
+            self.object.rotate_z(-0.01)
+        if "q" in self.input.key_pressed_list:
+            self.object.rotate_y(0.01)
+        if "e" in self.input.key_pressed_list:
+            self.object.rotate_y(-0.01)
+        
 
 
-if __name__ == "__main__":
-    myApp = App()
+# Instantiate this class and run the program
+Example(screen_size=[800, 600]).run()
