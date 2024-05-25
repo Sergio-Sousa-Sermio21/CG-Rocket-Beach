@@ -81,7 +81,7 @@ class CubeMesh:
 
         self.vertices = np.array(self.vertices, dtype=np.float32)
 
-        self.vertex_count = len(self.vertices) // 5;
+        self.vertex_count = len(self.vertices) // 5
 
         self.vao = glGenVertexArrays(1)
         glBindVertexArray(self.vao) #Irá definir os vertices
