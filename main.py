@@ -11,6 +11,7 @@ from geometry.berlin_massa import BerlinMassaGeometry
 from geometry.berlin_recheio import BerlinRecheioGeometry
 from geometry.calcao import CalcaoGeometry
 from geometry.madeira_bancos import MadeiraGeometry
+from geometry.niandertal import NiandertalGeometry
 from geometry.panamafita import PanamaFitaGeometry
 from geometry.parteAmarela import parteAmarela
 from geometry.parteAzul import parteAzul
@@ -65,7 +66,6 @@ class Example(Base):
         self.areia = Mesh(areia_plano, material1)
         self.areia.scale(0.5)
         self.areia.translate(0,-4,0)
-
         self.scene.add(self.areia)
 
         madeira_bancos = MadeiraGeometry()
@@ -127,6 +127,8 @@ class Example(Base):
         self.chapeu_mesh2.translate(0.1,-0.7,0)
         self.chapeu_mesh2.rotate_z(-0.1)
         self.scene.add(self.chapeu_mesh2)
+
+        #TODO Colocar o conteudo da geometry de baliza, niandertal(talvez), e octane
  
         grass_geometry = RectangleGeometry(width=100, height=100)
         grass_material = TextureMaterial(
