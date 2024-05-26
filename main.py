@@ -6,12 +6,14 @@ import sys
 import pygame
 
 from extras.directional_light import DirectionalLightHelper
+from geometry.arvores import FolhasGeometry, MadeiraArvoresGeometry
 from geometry.campo import *
 from geometry.berlin import *
 from geometry.bancos import *
 from geometry.humano import *
 from geometry.bola import *
 from geometry.octane import *
+from geometry.pedras import PedrasGeometry, FalesiaGeometry
 from geometry.sphere import SphereGeometry
 from geometry.rectangle import RectangleGeometry
 from core.base import Base
@@ -38,7 +40,7 @@ def create_mesh(geometry, filename):
     return Mesh(geometry, material)
 
 def create_phong_mesh(geometry, filename):
-    material = PhongMaterial(texture=Texture(file_name=filename), property_dict={"baseColor": [1,1, 1]}, number_of_light_sources=number_of_lights,
+    material = PhongMaterial(texture=Texture(file_name=filename), property_dict={"baseColor": [1, 1, 1]}, number_of_light_sources=number_of_lights,
             bump_texture=Texture(file_name="UV/Sand_004_Normal.png"))
     return Mesh(geometry, material)
 
@@ -53,14 +55,14 @@ def create_flat_mesh(geometry, filename):
 class Example(Base):
     """
     Render the axes and the rotated xy-grid.
-    Add box movement: WASDRF(move), QE(turn), TG(look).
+    Add box movement: WASDRF(move), QE(turn), TG(look up and down).
     """
 
     def initialize(self):
         print("Initializing program...")
         self.renderer = Renderer()
         self.scene = Scene()
-        self.camera = Camera(aspect_ratio=800/600)
+        self.camera = Camera(aspect_ratio=1920/1080)
         self.camera.set_position([0.5, 1, 3])
 
         self.rig = MovementRig()
@@ -105,6 +107,18 @@ class Example(Base):
         self.octane.add(self.rodasAtras)
         self.scene.add(self.octane)
 
+        self.pedras = create_phong_mesh(PedrasGeometry(), "Objetos/Texturas/Ambiente/rock.png")
+        self.scene.add(self.pedras)
+
+        self.arvores = create_phong_mesh(MadeiraArvoresGeometry(), "Objetos/Texturas/Ambiente/palmtree_wood.jpg")
+        self.arvores.add(create_phong_mesh(FolhasGeometry(), "Objetos/Texturas/Ambiente/palmtree_leaf.png"))
+        self.scene.add(self.arvores)
+
+        self.cliff = create_lambert_mesh(FalesiaGeometry(), "Objetos/Texturas/Ambiente/cliff.jpg")
+        self.scene.add(self.cliff)
+
+
+
         sea_material = LambertMaterial(
             texture=Texture(file_name="Objetos/Texturas/Ambiente/mar.jpg"),
             number_of_light_sources=number_of_lights,
@@ -113,7 +127,7 @@ class Example(Base):
         )
         self.sea = Mesh(RectangleGeometry(width=100, height=100), sea_material)
         self.sea.set_position([65, 4, 0])
-        self.sea.rotate_z(0.07)
+        self.sea.rotate_z(0.1)
         self.sea.rotate_x(-math.pi / 2)
         self.scene.add(self.sea)
 
@@ -139,7 +153,7 @@ class Example(Base):
         self.scene.add(self.rig)
         self.object = self.bola
 
-        self.ambient_light = AmbientLight(color=[0.4, 0.4, 0.4])
+        self.ambient_light = AmbientLight(color=[0.2, 0.2, 0.2])
         self.scene.add(self.ambient_light)
         self.directional_light = DirectionalLight(color=(0.8, 0.8, 0.8),direction=[0,-0.5, 0])
         self.scene.add(self.directional_light)
@@ -158,25 +172,25 @@ class Example(Base):
         self.rig.update(self.input, self.delta_time)
         self.renderer.render(self.scene, self.camera)
 
-        if "h" in self.input.key_pressed_list:
+        if "a" in self.input.key_pressed_list:
             self.camera.translate(-self.camera_move,0,0)
-        if "j" in self.input.key_pressed_list:
+        if "f" in self.input.key_pressed_list:
             self.camera.translate(0,-self.camera_move,0)
-        if "k" in self.input.key_pressed_list:
+        if "r" in self.input.key_pressed_list:
             self.camera.translate(0,self.camera_move,0)
-        if "l" in self.input.key_pressed_list:
+        if "d" in self.input.key_pressed_list:
             self.camera.translate(self.camera_move,0,0)
-        if "u" in self.input.key_pressed_list:
+        if "w" in self.input.key_pressed_list:
             self.camera.translate(0,0,-self.camera_move)
-        if "n" in self.input.key_pressed_list:
+        if "s" in self.input.key_pressed_list:
             self.camera.translate(0,0,self.camera_move)
         if "t" in self.input.key_pressed_list:
             self.camera.rotate_x(-0.01)
         if "g" in self.input.key_pressed_list:
             self.camera.rotate_x(0.01)
-        if "," in self.input.key_pressed_list:
+        if "e" in self.input.key_pressed_list:
             self.camera.rotate_y(-0.01)
-        if "m" in self.input.key_pressed_list:
+        if "q" in self.input.key_pressed_list:
             self.camera.rotate_y(0.01)
         if "1" in self.input.key_pressed_list:
             self.object = self.bancos
@@ -186,28 +200,28 @@ class Example(Base):
             self.object = self.campo
         if "4" in self.input.key_pressed_list:
             self.object = self.octane
-        if "a" in self.input.key_pressed_list:
+        if "left" in self.input.key_pressed_list:
             self.object.translate(-0.1,0,0)
-        if "w" in self.input.key_pressed_list:
+        if "up" in self.input.key_pressed_list:
             self.object.translate(0,0,-0.1)
-        if "d" in self.input.key_pressed_list:
+        if "right" in self.input.key_pressed_list:
             self.object.translate(0.1,0,0)
-        if "s" in self.input.key_pressed_list:
+        if "down" in self.input.key_pressed_list:
             self.object.translate(0,0,0.1)
-        if "r" in self.input.key_pressed_list:
+        if "k" in self.input.key_pressed_list:
             self.object.rotate_x(0.01)
-        if "f" in self.input.key_pressed_list:
+        if "j" in self.input.key_pressed_list:
             self.object.rotate_x(-0.01)
-        if "z" in self.input.key_pressed_list:
+        if "y" in self.input.key_pressed_list:
             self.object.rotate_z(0.01)
-        if "x" in self.input.key_pressed_list:
+        if "h" in self.input.key_pressed_list:
             self.object.rotate_z(-0.01)
-        if "q" in self.input.key_pressed_list:
+        if "u" in self.input.key_pressed_list:
             self.object.rotate_y(0.01)
-        if "e" in self.input.key_pressed_list:
+        if "i" in self.input.key_pressed_list:
             self.object.rotate_y(-0.01)
         
 
 
 # Instantiate this class and run the program
-Example(screen_size=[800, 600]).run()
+Example(screen_size=[1920, 1080]).run()
