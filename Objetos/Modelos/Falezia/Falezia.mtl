@@ -1,0 +1,42 @@
+# Blender 4.0.2 MTL File: 'estadio_com_areia.blend'
+# www.blender.org
+
+newmtl stranska_skala_1
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd C:/Users/Pedro/Desktop/ModelosPrai/source/stranska_skala_1DiffuseMap.tga
+
+newmtl stranska_skala_1.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd C:/Users/Pedro/Desktop/ModelosPrai/source/stranska_skala_1DiffuseMap.tga
+
+newmtl stranska_skala_1.002
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd C:/Users/Pedro/Desktop/ModelosPrai/source/stranska_skala_1DiffuseMap.tga
+
+newmtl stranska_skala_1.003
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd C:/Users/Pedro/Desktop/ModelosPrai/source/stranska_skala_1DiffuseMap.tga
