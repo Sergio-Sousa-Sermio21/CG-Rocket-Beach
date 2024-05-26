@@ -5,6 +5,8 @@ import sys
 
 import pygame
 
+from pygame import mixer
+
 from geometry.campo import *
 from geometry.berlin import *
 from geometry.bancos import *
@@ -40,6 +42,12 @@ class Example(Base):
         self.scene = Scene()
         self.camera = Camera(aspect_ratio=800/600)
         self.camera.set_position([0.5, 1, 3])
+        
+        
+        mixer.init() 
+        mixer.music.load("Music/Slushii - All I Need [Rocket League Intro Song] (2).mp3") 
+        mixer.music.set_volume(1) 
+        mixer.music.play()
 
         self.rig = MovementRig()
         self.rig.set_position([0, 0.5, -0.5])
