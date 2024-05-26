@@ -24,6 +24,7 @@ from extras.movement_rig import MovementRig
 from light.ambient import AmbientLight
 from light.directional import DirectionalLight
 from light.point import PointLight
+from light.shadow import Shadow
 from material.flat import FlatMaterial
 from material.lambert import LambertMaterial
 from material.phong import PhongMaterial
@@ -37,11 +38,12 @@ def create_mesh(geometry, filename):
     return Mesh(geometry, material)
 
 def create_phong_mesh(geometry, filename):
-    material = PhongMaterial(texture=Texture(file_name=filename), property_dict={"baseColor": [1,1, 1]}, number_of_light_sources=number_of_lights)
+    material = PhongMaterial(texture=Texture(file_name=filename), property_dict={"baseColor": [1,1, 1]}, number_of_light_sources=number_of_lights,
+            bump_texture=Texture(file_name="UV/Sand_004_Normal.png"))
     return Mesh(geometry, material)
 
 def create_lambert_mesh(geometry, filename):
-    material = LambertMaterial(texture=Texture(file_name=filename), property_dict={"baseColor": [1, 1, 1]}, number_of_light_sources=number_of_lights)
+    material = LambertMaterial(texture=Texture(file_name=filename), property_dict={"baseColor": [1, 1, 1]}, number_of_light_sources=number_of_lights, use_shadow=True)
     return Mesh(geometry, material)
 
 def create_flat_mesh(geometry, filename):
@@ -103,14 +105,23 @@ class Example(Base):
         self.octane.add(self.rodasAtras)
         self.scene.add(self.octane)
 
-        ambient_light = AmbientLight(color=[0.1, 0.1, 0.1])
-        self.scene.add(ambient_light)
-        self.directional_light = DirectionalLight(color=(0.8, 0.8, 0.8),direction=[0,-0.5, 0])
-        self.scene.add(self.directional_light)
+        sea_material = LambertMaterial(
+            texture=Texture(file_name="Objetos/Texturas/Ambiente/mar.jpg"),
+            number_of_light_sources=number_of_lights,
+            use_shadow=True,
+            bump_texture=Texture(file_name="UV/Sand_004_Normal.png")
+        )
+        self.sea = Mesh(RectangleGeometry(width=100, height=100), sea_material)
+        self.sea.set_position([65, 4, 0])
+        self.sea.rotate_z(0.07)
+        self.sea.rotate_x(-math.pi / 2)
+        self.scene.add(self.sea)
 
         sand_material = LambertMaterial(
             texture=Texture(file_name="Objetos/Texturas/Ambiente/sand.jpg"),
-            number_of_light_sources=number_of_lights
+            number_of_light_sources=number_of_lights,
+            use_shadow =True,
+            bump_texture=Texture(file_name="UV/Sand_004_Normal.png")
         )
         self.sand = Mesh(RectangleGeometry(width=100, height=100), sand_material)
         self.sand.rotate_x(-math.pi/2)
@@ -128,13 +139,17 @@ class Example(Base):
         self.scene.add(self.rig)
         self.object = self.bola
 
-        directional_light_helper = DirectionalLightHelper(self.directional_light)
+        self.ambient_light = AmbientLight(color=[0.4, 0.4, 0.4])
+        self.scene.add(self.ambient_light)
+        self.directional_light = DirectionalLight(color=(0.8, 0.8, 0.8),direction=[0,-0.5, 0])
+        self.scene.add(self.directional_light)
+        self.renderer.enable_shadows(self.directional_light)
         # The directional light can take any position because it covers all the space.
         # The directional light helper is a child of the directional light.
         # So changing the global matrix of the parent leads to changing
         # the global matrix of its child.
         self.directional_light.set_position([0, 2, 0])
-        self.directional_light.add(directional_light_helper)
+
         print("Troca de objeto no 1, 2, 3 e 4.")
         print("Camera h, j, k, l, u, n, t, g.")
         print("Ojeto w, a, s, d, q, e, r, f, z, x.")
