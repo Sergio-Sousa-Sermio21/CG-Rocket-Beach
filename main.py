@@ -5,6 +5,7 @@ import sys
 
 import pygame
 
+from extras.directional_light import DirectionalLightHelper
 from geometry.campo import *
 from geometry.berlin import *
 from geometry.bancos import *
@@ -20,13 +21,32 @@ from core_ext.renderer import Renderer
 from core_ext.scene import Scene
 from core_ext.texture import Texture
 from extras.movement_rig import MovementRig
+from light.ambient import AmbientLight
+from light.directional import DirectionalLight
+from light.point import PointLight
+from material.flat import FlatMaterial
+from material.lambert import LambertMaterial
+from material.phong import PhongMaterial
 from material.texture import TextureMaterial
 
+#Mudar para a quantidade de luzes que formos utilizar
+number_of_lights=2
 
 def create_mesh(geometry, filename):
     material = TextureMaterial(texture=Texture(file_name=filename))
     return Mesh(geometry, material)
 
+def create_phong_mesh(geometry, filename):
+    material = PhongMaterial(texture=Texture(file_name=filename), property_dict={"baseColor": [1,1, 1]}, number_of_light_sources=number_of_lights)
+    return Mesh(geometry, material)
+
+def create_lambert_mesh(geometry, filename):
+    material = LambertMaterial(texture=Texture(file_name=filename), property_dict={"baseColor": [1, 1, 1]}, number_of_light_sources=number_of_lights)
+    return Mesh(geometry, material)
+
+def create_flat_mesh(geometry, filename):
+    material = FlatMaterial(texture=Texture(file_name=filename), property_dict={"baseColor": [1, 1, 1]}, number_of_light_sources=number_of_lights)
+    return Mesh(geometry, material)
 
 class Example(Base):
     """
@@ -47,45 +67,50 @@ class Example(Base):
         sky = create_mesh(SphereGeometry(radius=50), "Objetos/Texturas/Ambiente/sky.jpg")
         self.scene.add(sky)
 
-        self.bola_Berlim = create_mesh(BerlinComerMassaGeometry(), "Objetos/Texturas/Humano/Berlin_massa.jpg")
-        self.bola_Berlim.add(create_mesh(BerlinComerRecheioGeometry(), "Objetos/Texturas/Humano/Berlin_recheio.png"))
+        self.bola_Berlim = create_phong_mesh(BerlinComerMassaGeometry(), "Objetos/Texturas/Humano/Berlin_massa.jpg")
+        self.bola_Berlim.add(create_phong_mesh(BerlinComerRecheioGeometry(), "Objetos/Texturas/Humano/Berlin_recheio.png"))
         self.scene.add(self.bola_Berlim)
 
-        self.bancos = create_mesh(MadeiraGeometry(), "Objetos/Texturas/Bancos/bench.jpg")
-        self.bancos.add(create_mesh(TubosGeometry(), "Objetos/Texturas/Bancos/vigas.jpeg"))
+        self.bancos = create_phong_mesh(MadeiraGeometry(), "Objetos/Texturas/Bancos/bench.jpg")
+        self.bancos.add(create_phong_mesh(TubosGeometry(), "Objetos/Texturas/Bancos/vigas.jpeg"))
         self.scene.add(self.bancos)
 
-        self.bola = create_mesh(BolaParteVermelha(), "Objetos/Texturas/Bola/vermelho.jpg")
-        self.bola.add(create_mesh(BolaParteAzul(), "Objetos/Texturas/Bola/azul.jpg"))
-        self.bola.add(create_mesh(BolaParteBranca(), "Objetos/Texturas/Bola/branco.png"))
-        self.bola.add(create_mesh(BolaParteVerde(), "Objetos/Texturas/Bola/verde.jpg"))
-        self.bola.add(create_mesh(BolaParteAmarela(), "Objetos/Texturas/Bola/amarelo.jpg"))
+        self.bola = create_phong_mesh(BolaParteVermelha(), "Objetos/Texturas/Bola/vermelho.jpg")
+        self.bola.add(create_phong_mesh(BolaParteAzul(), "Objetos/Texturas/Bola/azul.jpg"))
+        self.bola.add(create_phong_mesh(BolaParteBranca(), "Objetos/Texturas/Bola/branco.png"))
+        self.bola.add(create_phong_mesh(BolaParteVerde(), "Objetos/Texturas/Bola/verde.jpg"))
+        self.bola.add(create_phong_mesh(BolaParteAmarela(), "Objetos/Texturas/Bola/amarelo.jpg"))
         self.scene.add(self.bola)
 
-        self.humano = create_mesh(CalcaoGeometry(), "Objetos/Texturas/Humano/Calcoes_textura.png")
-        self.humano.add(create_mesh(HumanoCorpoGeometry(), "Objetos/Texturas/Humano/Pele.PNG"))
-        self.humano.add(create_mesh(HumanoDentesGeometry(), "Objetos/Texturas/Humano/Dentes.png"))
-        self.humano.add(create_mesh(HumanoLinguaGeometry(), "Objetos/Texturas/Humano/Lingua.png"))
-        self.humano.add(create_mesh(HumanoCabeloGeometry(), "Objetos/Texturas/Humano/PretoCabelo.png"))
-        self.humano.add(create_mesh(HumanoOculosGeometry(), "Objetos/Texturas/Humano/PretoOculos.png"))
+        self.humano = create_phong_mesh(CalcaoGeometry(), "Objetos/Texturas/Humano/Calcoes_textura.png")
+        self.humano.add(create_phong_mesh(HumanoCorpoGeometry(), "Objetos/Texturas/Humano/Pele.PNG"))
+        self.humano.add(create_phong_mesh(HumanoDentesGeometry(), "Objetos/Texturas/Humano/Dentes.png"))
+        self.humano.add(create_phong_mesh(HumanoLinguaGeometry(), "Objetos/Texturas/Humano/Lingua.png"))
+        self.humano.add(create_phong_mesh(HumanoCabeloGeometry(), "Objetos/Texturas/Humano/PretoCabelo.png"))
+        self.humano.add(create_phong_mesh(HumanoOculosGeometry(), "Objetos/Texturas/Humano/PretoOculos.png"))
         self.scene.add(self.humano)
 
-        self.octane = create_mesh(PanamaGeometry(), "Objetos/Texturas/Octane/Panama.jpeg")
-        self.octane.add(create_mesh(PanamaFitaGeometry(), "Objetos/Texturas/Octane/PanamaFita.jpg"))
-        self.octane.add(create_mesh(OctaneMotorGeometry(), "Objetos/Texturas/Octane/Motor.png"))
-        self.octane.add(create_mesh(OctaneCarcacaGeometry(), "Objetos/Texturas/Octane/ParteVermelha.png"))
-        self.octane.add(create_mesh(OctaneJanelaGeometry(), "Objetos/Texturas/Octane/Preto.png"))
-        self.octane.add(create_mesh(OctaneLinhasGeometry(), "Objetos/Texturas/Octane/Preto.png"))
+        self.octane = create_phong_mesh(PanamaGeometry(), "Objetos/Texturas/Octane/Panama.jpeg")
+        self.octane.add(create_phong_mesh(PanamaFitaGeometry(), "Objetos/Texturas/Octane/PanamaFita.jpg"))
+        self.octane.add(create_phong_mesh(OctaneMotorGeometry(), "Objetos/Texturas/Octane/Motor.png"))
+        self.octane.add(create_phong_mesh(OctaneCarcacaGeometry(), "Objetos/Texturas/Octane/ParteVermelha.png"))
+        self.octane.add(create_phong_mesh(OctaneJanelaGeometry(), "Objetos/Texturas/Octane/Preto.png"))
+        self.octane.add(create_phong_mesh(OctaneLinhasGeometry(), "Objetos/Texturas/Octane/Preto.png"))
 
-        self.rodasFrente = create_mesh(RodasFrenteGeometry(), "Objetos/Texturas/Octane/Preto.png")
-        self.rodasAtras = create_mesh(RodasTrasGeometry(), "Objetos/Texturas/Octane/Preto.png")
+        self.rodasFrente = create_phong_mesh(RodasFrenteGeometry(), "Objetos/Texturas/Octane/Preto.png")
+        self.rodasAtras = create_phong_mesh(RodasTrasGeometry(), "Objetos/Texturas/Octane/Preto.png")
         self.octane.add(self.rodasFrente)
         self.octane.add(self.rodasAtras)
         self.scene.add(self.octane)
 
-        sand_material = TextureMaterial(
+        ambient_light = AmbientLight(color=[0.1, 0.1, 0.1])
+        self.scene.add(ambient_light)
+        self.directional_light = DirectionalLight(color=(0.8, 0.8, 0.8),direction=[0,-0.5, 0])
+        self.scene.add(self.directional_light)
+
+        sand_material = LambertMaterial(
             texture=Texture(file_name="Objetos/Texturas/Ambiente/sand.jpg"),
-            property_dict={"repeatUV": [10, 10]}
+            number_of_light_sources=number_of_lights
         )
         self.sand = Mesh(RectangleGeometry(width=100, height=100), sand_material)
         self.sand.rotate_x(-math.pi/2)
@@ -103,6 +128,13 @@ class Example(Base):
         self.scene.add(self.rig)
         self.object = self.bola
 
+        directional_light_helper = DirectionalLightHelper(self.directional_light)
+        # The directional light can take any position because it covers all the space.
+        # The directional light helper is a child of the directional light.
+        # So changing the global matrix of the parent leads to changing
+        # the global matrix of its child.
+        self.directional_light.set_position([0, 2, 0])
+        self.directional_light.add(directional_light_helper)
         print("Troca de objeto no 1, 2, 3 e 4.")
         print("Camera h, j, k, l, u, n, t, g.")
         print("Ojeto w, a, s, d, q, e, r, f, z, x.")
@@ -110,6 +142,7 @@ class Example(Base):
     def update(self):
         self.rig.update(self.input, self.delta_time)
         self.renderer.render(self.scene, self.camera)
+
         if "h" in self.input.key_pressed_list:
             self.camera.translate(-self.camera_move,0,0)
         if "j" in self.input.key_pressed_list:
@@ -131,13 +164,13 @@ class Example(Base):
         if "m" in self.input.key_pressed_list:
             self.camera.rotate_y(0.01)
         if "1" in self.input.key_pressed_list:
-            self.object = self.bola_mesh
+            self.object = self.bancos
         if "2" in self.input.key_pressed_list:
-            self.object = self.chapeu_mesh2
+            self.object = self.humano
         if "3" in self.input.key_pressed_list:
-            self.object = self.bola_Berlim
+            self.object = self.campo
         if "4" in self.input.key_pressed_list:
-            self.object = self.calcao
+            self.object = self.octane
         if "a" in self.input.key_pressed_list:
             self.object.translate(-0.1,0,0)
         if "w" in self.input.key_pressed_list:

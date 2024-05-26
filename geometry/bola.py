@@ -9,7 +9,9 @@ class BolaParteAmarela(Geometry):
         position_data = my_obj_reader('Objetos/Modelos/Bola/ParteAmarelo.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
-        self.count_vertices()
+        self.add_attribute("vec2", "vertexUV", position_data)
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class BolaParteAzul(Geometry):
@@ -19,7 +21,9 @@ class BolaParteAzul(Geometry):
         position_data = my_obj_reader('Objetos/Modelos/Bola/ParteAzul.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
-        self.count_vertices()
+        self.add_attribute("vec2", "vertexUV", position_data)
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class BolaParteBranca(Geometry):
@@ -29,7 +33,9 @@ class BolaParteBranca(Geometry):
         position_data = my_obj_reader('Objetos/Modelos/Bola/ParteBranco.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
-        self.count_vertices()
+        self.add_attribute("vec2", "vertexUV", position_data)
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class BolaParteVerde(Geometry):
@@ -39,7 +45,9 @@ class BolaParteVerde(Geometry):
         position_data = my_obj_reader('Objetos/Modelos/Bola/ParteVerde.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
-        self.count_vertices()
+        self.add_attribute("vec2", "vertexUV", position_data)
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class BolaParteVermelha(Geometry):
@@ -49,4 +57,6 @@ class BolaParteVermelha(Geometry):
         position_data = my_obj_reader('Objetos/Modelos/Bola/ParteVermelha.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
-        self.count_vertices()
+        self.add_attribute("vec2", "vertexUV", position_data)
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)

@@ -9,7 +9,9 @@ class CalcaoGeometry(Geometry):
         position_data = my_obj_reader('Objetos/Modelos/Humano/Calcoes.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
-        self.count_vertices()
+        self.add_attribute("vec2", "vertexUV", position_data)
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class HumanoCorpoGeometry(Geometry):
@@ -20,7 +22,8 @@ class HumanoCorpoGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class HumanoDentesGeometry(Geometry):
@@ -31,7 +34,8 @@ class HumanoDentesGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class HumanoLinguaGeometry(Geometry):
@@ -42,7 +46,8 @@ class HumanoLinguaGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class HumanoCabeloGeometry(Geometry):
@@ -53,7 +58,8 @@ class HumanoCabeloGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class HumanoOculosGeometry(Geometry):
@@ -64,4 +70,5 @@ class HumanoOculosGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)

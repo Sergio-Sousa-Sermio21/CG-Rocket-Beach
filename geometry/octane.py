@@ -10,7 +10,8 @@ class OctaneCarcacaGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class OctaneMotorGeometry(Geometry):
@@ -21,7 +22,8 @@ class OctaneMotorGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 class OctaneJanelaGeometry(Geometry):
     def __init__(self, width=1, height=1, depth=1):
@@ -31,7 +33,8 @@ class OctaneJanelaGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 class OctaneLinhasGeometry(Geometry):
     def __init__(self, width=1, height=1, depth=1):
@@ -41,7 +44,8 @@ class OctaneLinhasGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 class RodasFrenteGeometry(Geometry):
     def __init__(self, width=1, height=1, depth=1):
@@ -51,7 +55,8 @@ class RodasFrenteGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 class RodasTrasGeometry(Geometry):
     def __init__(self, width=1, height=1, depth=1):
@@ -61,7 +66,8 @@ class RodasTrasGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class PanamaGeometry(Geometry):
@@ -72,7 +78,8 @@ class PanamaGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class PanamaFitaGeometry(Geometry):
@@ -83,4 +90,5 @@ class PanamaFitaGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
