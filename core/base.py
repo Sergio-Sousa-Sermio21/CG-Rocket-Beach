@@ -6,7 +6,7 @@ from core.utils import Utils
 
 
 class Base:
-    def __init__(self, screen_size=(512, 512)):
+    def __init__(self, screen_size=(1920, 1080)):
         # Initialize all pygame modules
         pygame.init()
         # Indicate rendering details

@@ -10,7 +10,8 @@ class BalizaAzulGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class BalizaVermelhoGeometry(Geometry):
@@ -21,7 +22,8 @@ class BalizaVermelhoGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 class BalizaBrancoGeometry(Geometry):
     def __init__(self, width=1, height=1, depth=1):
@@ -31,7 +33,8 @@ class BalizaBrancoGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class CampoTransparenteGeometry(Geometry):
@@ -41,7 +44,9 @@ class CampoTransparenteGeometry(Geometry):
         position_data = my_obj_reader('Objetos/Modelos/Estadio/ParteTransparente.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
-        self.count_vertices()
+        self.add_attribute("vec2", "vertexUV", position_data)
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class CampoPartePretaGeometry(Geometry):
@@ -51,7 +56,9 @@ class CampoPartePretaGeometry(Geometry):
         position_data = my_obj_reader('Objetos/Modelos/Estadio/PartePreta.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
-        self.count_vertices()
+        self.add_attribute("vec2", "vertexUV", position_data)
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class CampoParteAzulGeometry(Geometry):
@@ -61,4 +68,6 @@ class CampoParteAzulGeometry(Geometry):
         position_data = my_obj_reader('Objetos/Modelos/Estadio/ParteAzul.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
-        self.count_vertices()
+        self.add_attribute("vec2", "vertexUV", position_data)
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)

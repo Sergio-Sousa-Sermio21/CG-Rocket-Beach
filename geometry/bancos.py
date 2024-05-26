@@ -10,7 +10,8 @@ class MadeiraGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class TubosGeometry(Geometry):
@@ -21,4 +22,5 @@ class TubosGeometry(Geometry):
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
-        self.count_vertices()
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)

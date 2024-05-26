@@ -9,7 +9,9 @@ class BerlinExplosaoMassaGeometry(Geometry):
         position_data = my_obj_reader('berlin_massa.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
-        self.count_vertices()
+        self.add_attribute("vec2", "vertexUV", position_data)
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 #Falta o objeto da bola de berlin grande
@@ -19,7 +21,9 @@ class BerlinExplosaoRecheioGeometry(Geometry):
         position_data = my_obj_reader('berlin_recheio.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
-        self.count_vertices()
+        self.add_attribute("vec2", "vertexUV", position_data)
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class BerlinComerMassaGeometry(Geometry):
@@ -28,7 +32,9 @@ class BerlinComerMassaGeometry(Geometry):
         position_data = my_obj_reader('Objetos/Modelos/Humano/Bola.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
-        self.count_vertices()
+        self.add_attribute("vec2", "vertexUV", position_data)
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
 
 
 class BerlinComerRecheioGeometry(Geometry):
@@ -37,4 +43,6 @@ class BerlinComerRecheioGeometry(Geometry):
         position_data = my_obj_reader('Objetos/Modelos/Humano/Icing.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
-        self.count_vertices()
+        self.add_attribute("vec2", "vertexUV", position_data)
+        self.add_attribute("vec3", "vertexNormal", position_data)
+        self.add_attribute("vec3", "faceNormal", position_data)
