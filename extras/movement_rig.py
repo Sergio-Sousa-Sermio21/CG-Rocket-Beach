@@ -42,6 +42,7 @@ class MovementRig(Object3D):
         self._look_attachment.remove(child)
 
     def update(self, input_object, delta_time):
+        """
         move_amount = self._units_per_second * delta_time
         rotate_amount = self._degrees_per_second * (math.pi / 180) * delta_time
         if input_object.is_key_pressed(self.KEY_MOVE_FORWARDS):
@@ -64,3 +65,5 @@ class MovementRig(Object3D):
             self._look_attachment.rotate_x(rotate_amount)
         if input_object.is_key_pressed(self.KEY_LOOK_DOWN):
             self._look_attachment.rotate_x(-rotate_amount)
+        """
+

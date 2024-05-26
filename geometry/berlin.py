@@ -2,11 +2,10 @@ from geometry.geometry import Geometry
 from core.obj_reader import my_obj_reader
 
 
-#Falta o objeto da bola de berlin grande
 class BerlinExplosaoMassaGeometry(Geometry):
     def __init__(self, width=1, height=1, depth=1):
         super().__init__()
-        position_data = my_obj_reader('berlin_massa.obj')
+        position_data = my_obj_reader('Objetos/Modelos/BolaBerlim/Massa.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)
@@ -14,11 +13,10 @@ class BerlinExplosaoMassaGeometry(Geometry):
         self.add_attribute("vec3", "faceNormal", position_data)
 
 
-#Falta o objeto da bola de berlin grande
 class BerlinExplosaoRecheioGeometry(Geometry):
     def __init__(self, width=1, height=1, depth=1):
         super().__init__()
-        position_data = my_obj_reader('berlin_recheio.obj')
+        position_data = my_obj_reader('Objetos/Modelos/BolaBerlim/Icing.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)

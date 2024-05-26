@@ -60,6 +60,18 @@ class Example(Base):
     Add box movement: WASDRF(move), QE(turn), TG(look up and down).
     """
 
+    def __init__(self, screen_size=(1920, 1080)):
+        super().__init__(screen_size)
+        self.rig_size = None
+        self.currentObject = 0
+        self.octane_index = None
+        self.octane_rodas_tras_index = None
+        self.octane_rodas_frente_index = None
+        self.humano_index = None
+        self.bola_Berlim_index = None
+        self.bola_index = None
+        self.index_not_move = list()
+
     def initialize(self):
         print("Initializing program...")
         self.renderer = Renderer()
@@ -70,18 +82,20 @@ class Example(Base):
 
         mixer.init()
         mixer.music.load("Music/Slushii - All I Need [Rocket League Intro Song] (2).mp3")
-        mixer.music.set_volume(1)
+        mixer.music.set_volume(0.05)
         mixer.music.play()
 
-        self.rig = MovementRig()
-        self.rig.set_position([0, 0.5, -0.5])
+        self.rig = []
 
         sky = create_mesh(SphereGeometry(radius=50), "Objetos/Texturas/Ambiente/sky.jpg")
         self.scene.add(sky)
 
-        self.bola_Berlim = create_phong_mesh(BerlinComerMassaGeometry(), "Objetos/Texturas/Humano/Berlin_massa.jpg")
-        self.bola_Berlim.add(create_phong_mesh(BerlinComerRecheioGeometry(), "Objetos/Texturas/Humano/Berlin_recheio.png"))
+        self.bola_Berlim = create_phong_mesh(BerlinExplosaoMassaGeometry(), "Objetos/Texturas/Humano/Berlin_massa.jpg")
+        self.bola_Berlim.add(create_phong_mesh(BerlinExplosaoRecheioGeometry(), "Objetos/Texturas/Humano/Berlin_recheio.png"))
         self.scene.add(self.bola_Berlim)
+        self.rig.append(MovementRig())
+        self.bola_Berlim_index = len(self.rig)-1
+        self.rig[self.bola_Berlim_index].add(self.bola_Berlim)
 
         self.bancos = create_phong_mesh(MadeiraGeometry(), "Objetos/Texturas/Bancos/bench.jpg")
         self.bancos.add(create_phong_mesh(TubosGeometry(), "Objetos/Texturas/Bancos/vigas.jpeg"))
@@ -93,6 +107,9 @@ class Example(Base):
         self.bola.add(create_phong_mesh(BolaParteVerde(), "Objetos/Texturas/Bola/verde.jpg"))
         self.bola.add(create_phong_mesh(BolaParteAmarela(), "Objetos/Texturas/Bola/amarelo.jpg"))
         self.scene.add(self.bola)
+        self.rig.append(MovementRig())
+        self.bola_index = len(self.rig) - 1
+        self.rig[self.bola_index].add(self.bola)
 
         self.humano = create_phong_mesh(CalcaoGeometry(), "Objetos/Texturas/Humano/Calcoes_textura.png")
         self.humano.add(create_phong_mesh(HumanoCorpoGeometry(), "Objetos/Texturas/Humano/Pele.PNG"))
@@ -100,7 +117,12 @@ class Example(Base):
         self.humano.add(create_phong_mesh(HumanoLinguaGeometry(), "Objetos/Texturas/Humano/Lingua.png"))
         self.humano.add(create_phong_mesh(HumanoCabeloGeometry(), "Objetos/Texturas/Humano/PretoCabelo.png"))
         self.humano.add(create_phong_mesh(HumanoOculosGeometry(), "Objetos/Texturas/Humano/PretoOculos.png"))
+        self.humano.add(create_phong_mesh(BerlinComerMassaGeometry(), "Objetos/Texturas/Humano/Berlin_massa.jpg"))
+        self.humano.add(create_phong_mesh(BerlinComerRecheioGeometry(), "Objetos/Texturas/Humano/Berlin_recheio.png"))
         self.scene.add(self.humano)
+        self.rig.append(MovementRig())
+        self.humano_index = len(self.rig) - 1
+        self.rig[self.humano_index].add(self.humano)
 
         self.octane = create_phong_mesh(PanamaGeometry(), "Objetos/Texturas/Octane/Panama.jpeg")
         self.octane.add(create_phong_mesh(PanamaFitaGeometry(), "Objetos/Texturas/Octane/PanamaFita.jpg"))
@@ -110,10 +132,23 @@ class Example(Base):
         self.octane.add(create_phong_mesh(OctaneLinhasGeometry(), "Objetos/Texturas/Octane/Preto.png"))
 
         self.rodasFrente = create_phong_mesh(RodasFrenteGeometry(), "Objetos/Texturas/Octane/Preto.png")
+        self.rig.append(MovementRig())
+        self.octane_rodas_frente_index = len(self.rig) - 1
+        self.index_not_move.append(self.octane_rodas_frente_index)
+        self.rig[self.octane_rodas_frente_index].add(self.rodasFrente)
+
         self.rodasAtras = create_phong_mesh(RodasTrasGeometry(), "Objetos/Texturas/Octane/Preto.png")
+        self.rig.append(MovementRig())
+        self.octane_rodas_tras_index = len(self.rig) - 1
+        self.index_not_move.append(self.octane_rodas_tras_index)
+        self.rig[self.octane_rodas_tras_index].add(self.rodasAtras)
+
         self.octane.add(self.rodasFrente)
         self.octane.add(self.rodasAtras)
         self.scene.add(self.octane)
+        self.rig.append(MovementRig())
+        self.octane_index = len(self.rig) - 1
+        self.rig[self.octane_index].add(self.octane)
 
         self.pedras = create_phong_mesh(PedrasGeometry(), "Objetos/Texturas/Ambiente/rock.png")
         self.scene.add(self.pedras)
@@ -158,8 +193,10 @@ class Example(Base):
         self.scene.add(self.campo)
 
         self.camera_move = 0.1
-        self.scene.add(self.rig)
-        self.object = self.bola
+        self.rig_size = len(self.rig)
+        for i in range(self.rig_size):
+            self.scene.add(self.rig[i])
+        self.currentObject = 0
 
         self.ambient_light = AmbientLight(color=[0.2, 0.2, 0.2])
         self.scene.add(self.ambient_light)
@@ -177,14 +214,14 @@ class Example(Base):
         print("Ojeto w, a, s, d, q, e, r, f, z, x.")
 
     def update(self):
-        self.rig.update(self.input, self.delta_time)
+        for i in range(self.rig_size):
+            self.rig[i].update(self.input, self.delta_time)
         self.renderer.render(self.scene, self.camera)
-
         if "a" in self.input.key_pressed_list:
             self.camera.translate(-self.camera_move,0,0)
-        if "f" in self.input.key_pressed_list:
+        if "left shift" in self.input.key_pressed_list:
             self.camera.translate(0,-self.camera_move,0)
-        if "r" in self.input.key_pressed_list:
+        if "space" in self.input.key_pressed_list:
             self.camera.translate(0,self.camera_move,0)
         if "d" in self.input.key_pressed_list:
             self.camera.translate(self.camera_move,0,0)
@@ -200,36 +237,33 @@ class Example(Base):
             self.camera.rotate_y(-0.01)
         if "q" in self.input.key_pressed_list:
             self.camera.rotate_y(0.01)
-        if "1" in self.input.key_pressed_list:
-            self.object = self.bancos
-        if "2" in self.input.key_pressed_list:
-            self.object = self.humano
-        if "3" in self.input.key_pressed_list:
-            self.object = self.campo
-        if "4" in self.input.key_pressed_list:
-            self.object = self.octane
+        if "r" in self.input.key_down_list:
+            self.currentObject = (self.currentObject+1) % self.rig_size
+            while self.currentObject in self.index_not_move:
+                self.currentObject = (self.currentObject+1) % self.rig_size
         if "left" in self.input.key_pressed_list:
-            self.object.translate(-0.1,0,0)
+            self.rig[self.currentObject].translate(-0.1,0,0)
         if "up" in self.input.key_pressed_list:
-            self.object.translate(0,0,-0.1)
+            self.rig[self.currentObject].translate(0,0,-0.1)
         if "right" in self.input.key_pressed_list:
-            self.object.translate(0.1,0,0)
+            self.rig[self.currentObject].translate(0.1,0,0)
         if "down" in self.input.key_pressed_list:
-            self.object.translate(0,0,0.1)
+            self.rig[self.currentObject].translate(0,0,0.1)
         if "k" in self.input.key_pressed_list:
-            self.object.rotate_x(0.01)
+            self.rig[self.currentObject].rotate_x(0.01)
         if "j" in self.input.key_pressed_list:
-            self.object.rotate_x(-0.01)
+            self.rig[self.currentObject].rotate_x(-0.01)
         if "y" in self.input.key_pressed_list:
-            self.object.rotate_z(0.01)
+            self.rig[self.currentObject].rotate_z(0.01)
         if "h" in self.input.key_pressed_list:
-            self.object.rotate_z(-0.01)
+            self.rig[self.currentObject].rotate_z(-0.01)
         if "u" in self.input.key_pressed_list:
-            self.object.rotate_y(0.01)
+            self.rig[self.currentObject].rotate_y(0.01)
         if "i" in self.input.key_pressed_list:
-            self.object.rotate_y(-0.01)
+            self.rig[self.currentObject].rotate_y(-0.01)
+        if "escape" in self.input.key_pressed_list:
+            self.input._quit = True
+
         
-
-
 # Instantiate this class and run the program
 Example(screen_size=[1920, 1080]).run()
