@@ -127,6 +127,15 @@ class Object3D:
         m = Matrix.make_rotation_y(angle)
         self.apply_matrix(m, local)
 
+    def rotate_y_around_center(self, angle, center=np.array([0, 0, 0])):
+        translation_to_origin = Matrix.make_translation(-center[0], -center[1], -center[2])
+        rotation_matrix = Matrix.make_rotation_x(angle)
+        translation_back = Matrix.make_translation(center[0], center[1], center[2])
+
+        transformation_matrix = translation_back @ rotation_matrix @ translation_to_origin
+
+        self._matrix = transformation_matrix @ self._matrix
+
 
     def rotate_z(self, angle, local=True):
         m = Matrix.make_rotation_z(angle)

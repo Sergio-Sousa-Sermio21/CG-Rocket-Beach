@@ -63,6 +63,7 @@ class Example(Base):
 
     def __init__(self, screen_size=(1920, 1080)):
         super().__init__(screen_size)
+        self.animation = None
         self.rig_size = None
         self.currentObject = 0
         self.octane_index = None
@@ -75,12 +76,14 @@ class Example(Base):
         self.xRecorded = None
         self.yRecorded = None
         self.zRecorded = None
+        self.move = 0
+        self.rot = 1
 
     def initialize(self):
         print("Initializing program...")
         self.renderer = Renderer()
         self.scene = Scene()
-        self.camera = Camera(aspect_ratio=1920/1080)
+        self.camera = Camera(aspect_ratio=800/600)
         self.camera.set_position([0.5, 1, 3])
 
 
@@ -115,7 +118,7 @@ class Example(Base):
         self.rig.append(MovementRig())
         self.bola_index = len(self.rig) - 1
         self.rig[self.bola_index].add(self.bola)
-        """
+
         self.humano = create_phong_mesh(CalcaoGeometry(), "Objetos/Texturas/Humano/Calcoes_textura.png")
         self.humano.add(create_phong_mesh(HumanoCorpoGeometry(), "Objetos/Texturas/Humano/Pele.PNG"))
         self.humano.add(create_phong_mesh(HumanoDentesGeometry(), "Objetos/Texturas/Humano/Dentes.png"))
@@ -129,7 +132,7 @@ class Example(Base):
         self.rig.append(MovementRig())
         self.humano_index = len(self.rig) - 1
         self.rig[self.humano_index].add(self.humano)
-        """
+
         self.octane = create_phong_mesh(PanamaGeometry(), "Objetos/Texturas/Octane/Panama.jpeg")
         self.octane.add(create_phong_mesh(PanamaFitaGeometry(), "Objetos/Texturas/Octane/PanamaFita.jpg"))
         self.octane.add(create_phong_mesh(OctaneMotorGeometry(), "Objetos/Texturas/Octane/Motor.png"))
@@ -170,10 +173,10 @@ class Example(Base):
         self.arvores.add(create_phong_mesh(FolhasGeometry4(), "Objetos/Texturas/Ambiente/palmtree_leaf.png"))
 
         self.scene.add(self.arvores)
-        """
+
         self.cliff = create_lambert_mesh(FalesiaGeometry(), "Objetos/Texturas/Ambiente/cliff.jpg")
         self.scene.add(self.cliff)
-        """
+
 
 
         sea_material = LambertMaterial(
@@ -236,8 +239,60 @@ class Example(Base):
         print("Troca de objeto no 1, 2, 3 e 4.")
         print("Camera h, j, k, l, u, n, t, g.")
         print("Ojeto w, a, s, d, q, e, r, f, z, x.")
+        print("berlin: " + str(self.bola_Berlim_index), "humano: " + str(self.humano_index))
+        print("bola: " + str(self.bola_index), "octane: " + str(self.octane_index))
+
         self.play = False
+        # move ou rot, object, dist ou angle, time
+        # music, time to start, time to end
+        self.animation = [[self.move, self.octane_index, [0.5, 0, 0], 0.5],
+                          [self.move, self.bola_index, [0, 0, 0], 0.5],
+                          [self.move, self.octane_index, [1.1, 0, 0], 1.1],
+                          [self.move, self.bola_index, [1.1, 0.8, 0], 0.4],
+                          [self.move, self.bola_index, [1.07, 0.5, 0], 0.4],
+                          [self.move, self.bola_index, [1.07, 0.3, 0], 0.8],
+                          [self.move, self.bola_index, [1.07, -0.05, 0], 0.8],
+                          [self.move, self.bola_index, [1.07, -0.1, 0], 1.2],
+                          [self.move, self.bola_index, [1.07, -0.15, 0], 1.5],
+                          [self.move, self.bola_index, [1.07, -0.3, 0], 2],
+                          [self.move, self.bola_index, [-0.4, -0.2, 0], 0.5],
+                          [self.move, self.octane_index, [0, 0, 0], 5],
+                          [self.move, self.octane_index, [0.7, 0, 0], 0.4],
+                          [self.move, self.octane_index, [2.0, 0, 0], 0.6],
+                          [self.move, self.octane_index, [0.9, 0.3, 0], 0.5],
+                          [self.move, self.bola_index, [-0.5, -0.2, 0], 1.5],
+                          [self.move, self.octane_index, [0.9, 0.2, 0], 1.5],
+                          [self.move, self.bola_index, [-0.3, -0.1, 0], 4],
+                          [self.move, self.octane_index, [0.7, 0.1, 0], 4],
+                          [self.move, self.bola_index, [1.5, -0.2, 0], 0.8],
+                          [self.move, self.octane_index, [0.4, 0.3, 0], 0.8],
+                          [self.move, self.bola_index, [0, -1.1, 0], 0],
+                          [self.move, self.octane_index, [-3.2, 1.6, 0], 0.5],
+                          [self.move, self.bola_Berlim_index, [0, 0, 0], 14.4],
+                          [self.rot, self.bola_Berlim_index, [0, 0, 0], 15.7],
+                          [self.move, self.bola_Berlim_index, [17, 0, 0], 0],
+                          [self.move, self.bola_Berlim_index, [-0.6, 0, 0], 0.5],
+                          [self.move, self.octane_index, [-1.9, 0.7, 0], 0.8],
+                          [self.move, self.bola_Berlim_index, [-1.7, 1.1, 0], 0.8],
+                          [self.rot, self.bola_Berlim_index, [0, 360, 0], 0.8],
+                          ]
+
     def update(self):
+        if "," in self.input.key_down_list:
+            self.rig[self.octane_index].translate(-self.rig[self.octane_index].global_position[0],
+                                                  -self.rig[self.octane_index].global_position[1],
+                                                  -self.rig[self.octane_index].global_position[2])
+            self.rig[self.bola_index].translate(-self.rig[self.bola_index].global_position[0],
+                                                -self.rig[self.bola_index].global_position[1],
+                                                -self.rig[self.bola_index].global_position[2])
+            self.rig[self.bola_Berlim_index].translate(-self.rig[self.bola_Berlim_index].global_position[0],
+                                                       -self.rig[self.bola_Berlim_index].global_position[1],
+                                                       -self.rig[self.bola_Berlim_index].global_position[2])
+            for i in range(len(self.animation)):
+                if self.animation[i][0] == self.move:
+                    self.rig[self.animation[i][1]].move(self.animation[i][2], self.animation[i][3])
+                if self.animation[i][0] == self.rot:
+                    self.rig[self.animation[i][1]].rotate(self.animation[i][2], self.animation[i][3])
         if "p" in self.input.key_pressed_list:
             self.play = True
         if self.play:
@@ -275,6 +330,7 @@ class Example(Base):
             self.currentObject = (self.currentObject+1) % self.rig_size
             while self.currentObject in self.index_not_move:
                 self.currentObject = (self.currentObject+1) % self.rig_size
+            print(self.currentObject)
             self.xRecorded = self.rig[self.currentObject].global_position[0]
             self.yRecorded = self.rig[self.currentObject].global_position[1]
             self.zRecorded = self.rig[self.currentObject].global_position[2]
@@ -291,17 +347,17 @@ class Example(Base):
         if "l" in self.input.key_pressed_list:
             self.rig[self.currentObject].translate(0,-0.1,0)
         if "k" in self.input.key_pressed_list:
-            self.rig[self.currentObject].rotate_x(0.01)
+            self.rig[self.currentObject].rotate_x(0.01, local=False)
         if "j" in self.input.key_pressed_list:
-            self.rig[self.currentObject].rotate_x(-0.01)
+            self.rig[self.currentObject].rotate_x(-0.01, local=False)
         if "y" in self.input.key_pressed_list:
-            self.rig[self.currentObject].rotate_z(0.01)
+            self.rig[self.currentObject].rotate_z(0.01, local=False)
         if "h" in self.input.key_pressed_list:
-            self.rig[self.currentObject].rotate_z(-0.01)
+            self.rig[self.currentObject].rotate_z(-0.01, local=False)
         if "u" in self.input.key_pressed_list:
-            self.rig[self.currentObject].rotate_y(0.01)
+            self.rig[self.currentObject].rotate_y(0.01, local=False)
         if "i" in self.input.key_pressed_list:
-            self.rig[self.currentObject].rotate_y(-0.01)
+            self.rig[self.currentObject].rotate_y(-0.01, local=False)
         if "escape" in self.input.key_pressed_list:
             self.input._quit = True
         if "1" in self.input.key_down_list:
@@ -309,9 +365,9 @@ class Example(Base):
             self.yRecorded = self.rig[self.currentObject].global_position[1]
             self.zRecorded = self.rig[self.currentObject].global_position[2]
         if "2" in self.input.key_down_list:
-            x_move = str('x: ') + str(round(self.rig[self.currentObject].global_position[0] - self.xRecorded, 3))
-            y_move = str('y: ') + str(round(self.rig[self.currentObject].global_position[1] - self.yRecorded, 3))
-            z_move = str('z: ') + str(round(self.rig[self.currentObject].global_position[2] - self.zRecorded, 3))
+            x_move = str('x: ') + str(round((self.rig[self.currentObject].global_position[0] - self.xRecorded)*100)/100)
+            y_move = str('y: ') + str(round((self.rig[self.currentObject].global_position[1] - self.yRecorded)*100)/100)
+            z_move = str('z: ') + str(round((self.rig[self.currentObject].global_position[2] - self.zRecorded)*100)/100)
             print(x_move, y_move, z_move)
 
 
