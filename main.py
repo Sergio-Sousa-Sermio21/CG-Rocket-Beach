@@ -90,7 +90,7 @@ class Example(Base):
         print("Initializing program...")
         self.renderer = Renderer()
         self.scene = Scene()
-        self.camera = Camera(aspect_ratio=800/600)
+        self.camera = Camera(aspect_ratio=1920/1080)
         self.camera.set_position([0.5, 1, 22])
 
 
@@ -113,6 +113,9 @@ class Example(Base):
         self.sounds[self.bater_sound].set_volume(5)
         self.start_sound = len(self.sounds)
         self.sounds.append(mixer.Sound("Music/chill.mp3"))
+        self.meme = len(self.sounds)
+        self.sounds.append(mixer.Sound("Music/Meme.mp3"))
+        self.sounds[self.meme].set_volume(0.1)
         self.sounds[self.start_sound].set_volume(0.2)
         self.sounds[self.start_sound].play()
 
@@ -144,6 +147,15 @@ class Example(Base):
         self.bola_index = len(self.rig) - 1
         self.rig[self.bola_index].add(self.bola)
 
+        anuncio_Material = TextureMaterial(
+            texture=Texture(file_name="Objetos/Texturas/Anuncio/bolinhasdescontu.png"),
+        )
+        self.anuncio = Mesh(RectangleGeometry(width=1, height=1), anuncio_Material)
+        self.anuncio.set_position((-40,2,0))
+
+        self.anuncio_index = len(self.rig) - 1
+        self.rig[self.anuncio_index].add(self.anuncio)
+
         self.humano = create_phong_mesh(CalcaoGeometry(), "Objetos/Texturas/Humano/Calcoes_textura.png")
         self.humano.add(create_phong_mesh(HumanoCorpoGeometry(), "Objetos/Texturas/Humano/Pele.PNG"))
         self.humano.add(create_phong_mesh(HumanoDentesGeometry(), "Objetos/Texturas/Humano/Dentes.png"))
@@ -154,7 +166,7 @@ class Example(Base):
         self.humano.add(oculos)
         self.humano.add(create_phong_mesh(BerlinComerMassaGeometry(), "Objetos/Texturas/Humano/Berlin_massa.jpg"))
         self.humano.add(create_phong_mesh(BerlinComerRecheioGeometry(), "Objetos/Texturas/Humano/Berlin_recheio.png"))
-        self.humano.set_position((-20, 0, 0))
+        self.humano.set_position((-40, 0, 0))
         self.scene.add(self.humano)
         self.rig.append(MovementRig())
         self.humano_index = len(self.rig) - 1
@@ -234,7 +246,7 @@ class Example(Base):
             use_shadow =True,
             bump_texture=Texture(file_name="UV/Sand_004_Normal.png")
         )
-        self.sand = Mesh(RectangleGeometry(width=100, height=100), sand_material)
+        self.sand = Mesh(RectangleGeometry(width=70, height=70), sand_material)
         self.sand.rotate_x(-math.pi/2)
         self.scene.add(self.sand)
 
@@ -280,11 +292,17 @@ class Example(Base):
             self.cameraMovements.append([-16, 10, -16, [0, True], [0, True], [0, True], 1])
         for i in range(240):
             self.cameraMovements.append([0, 0, -12 / 240, [0, True], [0, True], [0, True], 0])
+        for i in range(15):
+            self.cameraMovements.append([0, 0, 0, [0, True], [0, True], [0, True], 0])
         self.cameraMovements.append([0, 0, 0, [0.5, True], [0, True], [0, True], 0])
         self.cameraMovements.append([0, 0, 0, [0, True], [math.pi / 1.3, True], [0, True], 0])
         self.cameraMovements.append([0.5, 0.5, 2, [0, True], [0, True], [0, True], 1])
+        for i in range(15):
+            self.cameraMovements.append([0, 0, 0, [0, True], [0, True], [0, True], 0])
         for i in range(210):
             self.cameraMovements.append([0, 0, 0, [0, True], [2 * math.pi / 210, False], [0, True], 0])
+        for i in range(15):
+            self.cameraMovements.append([0, 0, 0, [0, True], [0, True], [0, True], 0])
         self.j = 0
 
         print("Troca de objeto no 1, 2, 3 e 4.")
@@ -299,8 +317,8 @@ class Example(Base):
         # move ou rot, object, dist ou angle, time
         # music, time to start, time to end
         self.animation = [[self.musica_rocket, 0, 4.5],
-                          [self.musica_rocket, 13.6, 60],
                           [self.heartbeat_sound, 4.5, 13.6],
+                          [self.meme, 13.4, 25],
                           [self.explosao_sound, 14.2, 17.2],
                           [self.motor_sound, 0, 1.5],
                           [self.motor_sound, 6.6, 7.5],
@@ -347,16 +365,19 @@ class Example(Base):
                           [self.move, self.octane_index, [-3.2, 1.6, 0], 0.5],
                           [self.move, self.camara_index, [0, 0, 0], 1],
                           [self.move, self.camara_index, [-1.2, 1.1, 0], 0.8],
-                          [self.rot, self.camara_index, [0, -90, 0], 0.5],
+                          [self.rot, self.camara_index, [0, 0, 0], 0.5],
+                          [self.rot, self.camara_index, [0, -90, 0], 2],
                           [self.move, self.bola_Berlim_index, [0, 0, 0], 14.4],
                           [self.move, self.bola_Berlim_index, [17, 2, 0], 0],
                           [self.move, self.bola_Berlim_index, [-0.6, 0, 0], 0.5],
                           [self.move, self.octane_index, [-1.9, 0.7, 0], 0.8],
                           [self.move, self.bola_Berlim_index, [-1.7, 1.1, 0], 0.8],
-                          [self.move, self.camara_index, [0, 0, 0], 3],
-                          [self.rot, self.camara_index, [0, 0, 0], 18.5],
+                          [self.move, self.camara_index, [0, 0, 0], 1.0],
+                          [self.rot, self.camara_index, [0, 0, 0], 15],
                           [self.rot, self.camara_index, [0, 90, 0], 1],
-                          [self.move, self.camara_index, [-26.4, -0.2, 0], 0],
+                          [self.move, self.anuncio_index, [12.2, 0.6, 0], 0],
+                          [self.move, self.camara_index, [-26.4, 0.1, 0], 0],
+                          [self.rot, self.camara_index, [-20, 0, 0], 1],
                           ]
 
     def update(self):
@@ -476,4 +497,4 @@ class Example(Base):
 
 
 # Instantiate this class and run the program
-Example(screen_size=[800, 600]).run()
+Example(screen_size=[1920, 1080]).run()
