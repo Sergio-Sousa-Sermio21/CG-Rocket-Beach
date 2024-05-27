@@ -1,0 +1,32 @@
+# Blender 4.0.2 MTL File: 'estadio_com_areia.blend'
+# www.blender.org
+
+newmtl Leaf_1
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 1
+map_Kd C:/Users/Pedro/Desktop/TesteObj/Lead/PalmLeaf_1.png
+map_d C:/Users/Pedro/Desktop/TesteObj/Lead/PalmLeaf_1.png
+
+newmtl Leaf_2
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 1
+map_Kd C:/Users/Pedro/Desktop/TesteObj/Lead/PalmLeaf_3.png
+map_d C:/Users/Pedro/Desktop/TesteObj/Lead/PalmLeaf_3.png
+
+newmtl Leaf_3
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 1
+map_Kd C:/Users/Pedro/Desktop/TesteObj/Lead/PalmLeaf_4.png
+map_d C:/Users/Pedro/Desktop/TesteObj/Lead/PalmLeaf_4.png
