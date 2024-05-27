@@ -1,22 +1,42 @@
 # Blender 4.0.2 MTL File: 'estadio_com_areia.blend'
 # www.blender.org
 
-newmtl Queen_Palm_Trunk_Mat
-Ns 200.000000
+newmtl Bark_1
+Ns 250.000000
 Ka 1.000000 1.000000 1.000000
-Kd 0.500000 0.500000 0.500000
-Ks 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
-illum 2
+illum 1
+map_Kd C:/Users/Pedro/Desktop/TesteObj/Bark_Diffuse_20062022-2008/Bark_1_Bake1_pbr_diffuse.jpg
 
-newmtl Queen_Palm_Trunk_Mat.001
-Ns 200.000000
+newmtl Bark_2
+Ns 250.000000
 Ka 1.000000 1.000000 1.000000
-Kd 0.500000 0.500000 0.500000
-Ks 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
-illum 2
+illum 1
+map_Kd C:/Users/Pedro/Desktop/TesteObj/Bark_Diffuse_20062022-2008/Bark_2_Bake1_pbr_diffuse.jpg
+
+newmtl Bark_3
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd C:/Users/Pedro/Desktop/TesteObj/Bark_Diffuse_20062022-2008/Bark_3_Bake1_pbr_diffuse.jpg
+
+newmtl Bark_4
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd C:/Users/Pedro/Desktop/TesteObj/Bark_Diffuse_20062022-2008/Bark_4_Bake1_pbr_diffuse.jpg
