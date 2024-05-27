@@ -89,7 +89,7 @@ class Example(Base):
 
         mixer.init()
         MusicaRocket = mixer.Sound("Music/Slushii - All I Need [Rocket League Intro Song] (2).mp3")
-        MusicaRocket.set_volume(0.05)
+        MusicaRocket.set_volume(0.2)
         Motor = mixer.Sound("Music/motor.mp3")
         MusicaRocket.play()
         Motor.set_volume(0.05)
@@ -124,7 +124,7 @@ class Example(Base):
         self.humano.add(create_phong_mesh(HumanoDentesGeometry(), "Objetos/Texturas/Humano/Dentes.png"))
         self.humano.add(create_phong_mesh(HumanoLinguaGeometry(), "Objetos/Texturas/Humano/Lingua.png"))
         self.humano.add(create_phong_mesh(HumanoCabeloGeometry(), "Objetos/Texturas/Humano/PretoCabelo.png"))
-        self.humano.add(create_phong_mesh(HumanoOculosGeometry(), "Objetos/Texturas/Humano/PretoOculos.png"))
+        #self.humano.add(create_phong_mesh(HumanoOculosGeometry(), "Objetos/Texturas/Humano/PretoOculos.png"))
         self.humano.add(create_phong_mesh(BerlinComerMassaGeometry(), "Objetos/Texturas/Humano/Berlin_massa.jpg"))
         self.humano.add(create_phong_mesh(BerlinComerRecheioGeometry(), "Objetos/Texturas/Humano/Berlin_recheio.png"))
         self.humano.set_position((-20, 0, 0))
@@ -174,8 +174,11 @@ class Example(Base):
 
         self.scene.add(self.arvores)
 
+
+
         self.cliff = create_lambert_mesh(FalesiaGeometry(), "Objetos/Texturas/Ambiente/cliff.jpg")
         self.scene.add(self.cliff)
+
 
 
 
@@ -269,12 +272,10 @@ class Example(Base):
                           [self.move, self.bola_index, [0, -1.1, 0], 0],
                           [self.move, self.octane_index, [-3.2, 1.6, 0], 0.5],
                           [self.move, self.bola_Berlim_index, [0, 0, 0], 14.4],
-                          [self.rot, self.bola_Berlim_index, [0, 0, 0], 15.7],
                           [self.move, self.bola_Berlim_index, [17, 0, 0], 0],
                           [self.move, self.bola_Berlim_index, [-0.6, 0, 0], 0.5],
                           [self.move, self.octane_index, [-1.9, 0.7, 0], 0.8],
                           [self.move, self.bola_Berlim_index, [-1.7, 1.1, 0], 0.8],
-                          [self.rot, self.bola_Berlim_index, [0, 360, 0], 0.8],
                           ]
 
     def update(self):
