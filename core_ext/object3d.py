@@ -127,6 +127,7 @@ class Object3D:
         m = Matrix.make_rotation_y(angle)
         self.apply_matrix(m, local)
 
+
     def rotate_z(self, angle, local=True):
         m = Matrix.make_rotation_z(angle)
         self.apply_matrix(m, local)

@@ -2,13 +2,14 @@ import numpy as np
 import math
 import pathlib
 import sys
-
+import time
 import pygame
 
 from pygame import mixer
 
+
 from extras.directional_light import DirectionalLightHelper
-from geometry.arvores import FolhasGeometry, MadeiraArvoresGeometry
+from geometry.arvores import *
 from geometry.campo import *
 from geometry.berlin import *
 from geometry.bancos import *
@@ -71,6 +72,9 @@ class Example(Base):
         self.bola_Berlim_index = None
         self.bola_index = None
         self.index_not_move = list()
+        self.xRecorded = None
+        self.yRecorded = None
+        self.zRecorded = None
 
     def initialize(self):
         print("Initializing program...")
@@ -81,10 +85,11 @@ class Example(Base):
 
 
         mixer.init()
-        mixer.music.load("Music/Slushii - All I Need [Rocket League Intro Song] (2).mp3")
-        mixer.music.set_volume(0.05)
-        mixer.music.play()
-
+        MusicaRocket = mixer.Sound("Music/Slushii - All I Need [Rocket League Intro Song] (2).mp3")
+        MusicaRocket.set_volume(0.05)
+        Motor = mixer.Sound("Music/motor.mp3")
+        MusicaRocket.play()
+        Motor.set_volume(0.05)
         self.rig = []
 
         sky = create_mesh(SphereGeometry(radius=50), "Objetos/Texturas/Ambiente/sky.jpg")
@@ -110,7 +115,7 @@ class Example(Base):
         self.rig.append(MovementRig())
         self.bola_index = len(self.rig) - 1
         self.rig[self.bola_index].add(self.bola)
-
+        """
         self.humano = create_phong_mesh(CalcaoGeometry(), "Objetos/Texturas/Humano/Calcoes_textura.png")
         self.humano.add(create_phong_mesh(HumanoCorpoGeometry(), "Objetos/Texturas/Humano/Pele.PNG"))
         self.humano.add(create_phong_mesh(HumanoDentesGeometry(), "Objetos/Texturas/Humano/Dentes.png"))
@@ -119,11 +124,12 @@ class Example(Base):
         self.humano.add(create_phong_mesh(HumanoOculosGeometry(), "Objetos/Texturas/Humano/PretoOculos.png"))
         self.humano.add(create_phong_mesh(BerlinComerMassaGeometry(), "Objetos/Texturas/Humano/Berlin_massa.jpg"))
         self.humano.add(create_phong_mesh(BerlinComerRecheioGeometry(), "Objetos/Texturas/Humano/Berlin_recheio.png"))
+        self.humano.set_position((-20, 0, 0))
         self.scene.add(self.humano)
         self.rig.append(MovementRig())
         self.humano_index = len(self.rig) - 1
         self.rig[self.humano_index].add(self.humano)
-
+        """
         self.octane = create_phong_mesh(PanamaGeometry(), "Objetos/Texturas/Octane/Panama.jpeg")
         self.octane.add(create_phong_mesh(PanamaFitaGeometry(), "Objetos/Texturas/Octane/PanamaFita.jpg"))
         self.octane.add(create_phong_mesh(OctaneMotorGeometry(), "Objetos/Texturas/Octane/Motor.png"))
@@ -153,13 +159,21 @@ class Example(Base):
         self.pedras = create_phong_mesh(PedrasGeometry(), "Objetos/Texturas/Ambiente/rock.png")
         self.scene.add(self.pedras)
 
-        self.arvores = create_phong_mesh(MadeiraArvoresGeometry(), "Objetos/Texturas/Ambiente/palmtree_wood.jpg")
-        self.arvores.add(create_phong_mesh(FolhasGeometry(), "Objetos/Texturas/Ambiente/palmtree_leaf.png"))
-        self.scene.add(self.arvores)
+        self.arvores = create_phong_mesh(MadeiraArvoresGeometry1(), "Objetos/Texturas/Ambiente/palmtree_wood.jpg")
+        self.arvores.add(create_phong_mesh(MadeiraArvoresGeometry2(), "Objetos/Texturas/Ambiente/palmtree_wood.jpg"))
+        self.arvores.add(create_phong_mesh(MadeiraArvoresGeometry3(), "Objetos/Texturas/Ambiente/palmtree_wood.jpg"))
+        self.arvores.add(create_phong_mesh(MadeiraArvoresGeometry4(), "Objetos/Texturas/Ambiente/palmtree_wood.jpg"))
 
+        self.arvores.add(create_phong_mesh(FolhasGeometry1(), "Objetos/Texturas/Ambiente/palmtree_leaf.png"))
+        self.arvores.add(create_phong_mesh(FolhasGeometry2(), "Objetos/Texturas/Ambiente/palmtree_leaf.png"))
+        self.arvores.add(create_phong_mesh(FolhasGeometry3(), "Objetos/Texturas/Ambiente/palmtree_leaf.png"))
+        self.arvores.add(create_phong_mesh(FolhasGeometry4(), "Objetos/Texturas/Ambiente/palmtree_leaf.png"))
+
+        self.scene.add(self.arvores)
+        """
         self.cliff = create_lambert_mesh(FalesiaGeometry(), "Objetos/Texturas/Ambiente/cliff.jpg")
         self.scene.add(self.cliff)
-
+        """
 
 
         sea_material = LambertMaterial(
@@ -184,6 +198,7 @@ class Example(Base):
         self.sand.rotate_x(-math.pi/2)
         self.scene.add(self.sand)
 
+
         self.campo = create_mesh(BalizaAzulGeometry(), "Objetos/Texturas/Baliza/ParteAzul.png")
         self.campo.add(create_mesh(BalizaVermelhoGeometry(), "Objetos/Texturas/Baliza/ParteVermelha.png"))
         self.campo.add(create_mesh(BalizaBrancoGeometry(), "Objetos/Texturas/Baliza/ParteBranca.png"))
@@ -192,15 +207,9 @@ class Example(Base):
         self.campo.add(create_mesh(CampoTransparenteGeometry(), "Objetos/Texturas/Estadio/ParteTransparente.png"))
         self.scene.add(self.campo)
 
-        self.camera_move = 0.1
-        self.rig_size = len(self.rig)
-        for i in range(self.rig_size):
-            self.scene.add(self.rig[i])
-        self.currentObject = 0
-
-        self.ambient_light = AmbientLight(color=[0.2, 0.2, 0.2])
+        self.ambient_light = AmbientLight(color=[0.3, 0.3, 0.3])
         self.scene.add(self.ambient_light)
-        self.directional_light = DirectionalLight(color=(0.8, 0.8, 0.8),direction=[0,-0.5, 0])
+        self.directional_light = DirectionalLight(color=(0.8, 0.8, 0.8), direction=[0, -0.5, 0])
         self.scene.add(self.directional_light)
         self.renderer.enable_shadows(self.directional_light)
         # The directional light can take any position because it covers all the space.
@@ -209,11 +218,36 @@ class Example(Base):
         # the global matrix of its child.
         self.directional_light.set_position([0, 2, 0])
 
+
+        self.camera_move = 0.1
+        self.rig_size = len(self.rig)
+        for i in range(self.rig_size):
+            self.scene.add(self.rig[i])
+        self.currentObject = 0
+        self.cameraMovements = []
+        for i in range(180):
+            self.cameraMovements.append([0, 0, -0.011, [-0.002, True], [0, True], [0, True]])
+        for i in range(80):
+            self.cameraMovements.append([0, 0, 0, [0, True], [-math.pi/100, False], [0, True]])
+        for i in range(20):
+            self.cameraMovements.append([-0.03, 0, 0, [0, True], [-math.pi / 100, False], [0, True]])
+        self.j = 0
+
         print("Troca de objeto no 1, 2, 3 e 4.")
         print("Camera h, j, k, l, u, n, t, g.")
         print("Ojeto w, a, s, d, q, e, r, f, z, x.")
-
+        self.play = False
     def update(self):
+        if "p" in self.input.key_pressed_list:
+            self.play = True
+        if self.play:
+            if self.j < len(self.cameraMovements):
+                movimento = self.cameraMovements[self.j]
+                self.camera.translate(movimento[0], movimento[1], movimento[2])
+                self.camera.rotate_x(movimento[3][0], movimento[3][1])
+                self.camera.rotate_y(movimento[4][0], movimento[4][1])
+                self.camera.rotate_z(movimento[5][0], movimento[5][1])
+                self.j += 1
         for i in range(self.rig_size):
             self.rig[i].update(self.input, self.delta_time)
         self.renderer.render(self.scene, self.camera)
@@ -241,6 +275,9 @@ class Example(Base):
             self.currentObject = (self.currentObject+1) % self.rig_size
             while self.currentObject in self.index_not_move:
                 self.currentObject = (self.currentObject+1) % self.rig_size
+            self.xRecorded = self.rig[self.currentObject].global_position[0]
+            self.yRecorded = self.rig[self.currentObject].global_position[1]
+            self.zRecorded = self.rig[self.currentObject].global_position[2]
         if "left" in self.input.key_pressed_list:
             self.rig[self.currentObject].translate(-0.1,0,0)
         if "up" in self.input.key_pressed_list:
@@ -249,6 +286,10 @@ class Example(Base):
             self.rig[self.currentObject].translate(0.1,0,0)
         if "down" in self.input.key_pressed_list:
             self.rig[self.currentObject].translate(0,0,0.1)
+        if "o" in self.input.key_pressed_list:
+            self.rig[self.currentObject].translate(0,0.1,0)
+        if "l" in self.input.key_pressed_list:
+            self.rig[self.currentObject].translate(0,-0.1,0)
         if "k" in self.input.key_pressed_list:
             self.rig[self.currentObject].rotate_x(0.01)
         if "j" in self.input.key_pressed_list:
@@ -263,7 +304,16 @@ class Example(Base):
             self.rig[self.currentObject].rotate_y(-0.01)
         if "escape" in self.input.key_pressed_list:
             self.input._quit = True
+        if "1" in self.input.key_down_list:
+            self.xRecorded = self.rig[self.currentObject].global_position[0]
+            self.yRecorded = self.rig[self.currentObject].global_position[1]
+            self.zRecorded = self.rig[self.currentObject].global_position[2]
+        if "2" in self.input.key_down_list:
+            x_move = str('x: ') + str(round(self.rig[self.currentObject].global_position[0] - self.xRecorded, 3))
+            y_move = str('y: ') + str(round(self.rig[self.currentObject].global_position[1] - self.yRecorded, 3))
+            z_move = str('z: ') + str(round(self.rig[self.currentObject].global_position[2] - self.zRecorded, 3))
+            print(x_move, y_move, z_move)
 
-        
+
 # Instantiate this class and run the program
-Example(screen_size=[1920, 1080]).run()
+Example(screen_size=[800, 600]).run()
