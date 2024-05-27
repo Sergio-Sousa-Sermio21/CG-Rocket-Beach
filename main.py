@@ -63,6 +63,12 @@ class Example(Base):
 
     def __init__(self, screen_size=(1920, 1080)):
         super().__init__(screen_size)
+        self.start_sound = None
+        self.bater_sound = None
+        self.heartbeat_sound = None
+        self.explosao_sound = None
+        self.motor_sound = None
+        self.musica_rocket = None
         self.animation = None
         self.rig_size = None
         self.currentObject = 0
@@ -78,21 +84,39 @@ class Example(Base):
         self.zRecorded = None
         self.move = 0
         self.rot = 1
+        self.tick_counter = 0
 
     def initialize(self):
         print("Initializing program...")
         self.renderer = Renderer()
         self.scene = Scene()
         self.camera = Camera(aspect_ratio=800/600)
-        self.camera.set_position([0.5, 1, 3])
+        self.camera.set_position([0.5, 1, 22])
 
 
         mixer.init()
-        MusicaRocket = mixer.Sound("Music/Slushii - All I Need [Rocket League Intro Song] (2).mp3")
-        MusicaRocket.set_volume(0.2)
-        Motor = mixer.Sound("Music/motor.mp3")
-        MusicaRocket.play()
-        Motor.set_volume(0.05)
+        self.sounds = []
+        self.musica_rocket = len(self.sounds)
+        self.sounds.append(mixer.Sound("Music/rocket_music.mp3"))
+        self.sounds[self.musica_rocket].set_volume(0.1)
+        self.motor_sound = len(self.sounds)
+        self.sounds.append(mixer.Sound("Music/motor.mp3"))
+        self.sounds[self.motor_sound].set_volume(0.1)
+        self.explosao_sound = len(self.sounds)
+        self.sounds.append(mixer.Sound("Music/explosao.mp3"))
+        self.sounds[self.explosao_sound].set_volume(0.9)
+        self.heartbeat_sound = len(self.sounds)
+        self.sounds.append(mixer.Sound("Music/heartbeat.mp3"))
+        self.sounds[self.heartbeat_sound].set_volume(2)
+        self.bater_sound = len(self.sounds)
+        self.sounds.append(mixer.Sound("Music/bater_na_bola.mp3"))
+        self.sounds[self.bater_sound].set_volume(5)
+        self.start_sound = len(self.sounds)
+        self.sounds.append(mixer.Sound("Music/chill.mp3"))
+        self.sounds[self.start_sound].set_volume(0.2)
+        self.sounds[self.start_sound].play()
+
+
         self.rig = []
 
         sky = create_mesh(SphereGeometry(radius=50), "Objetos/Texturas/Ambiente/sky.jpg")
@@ -100,6 +124,7 @@ class Example(Base):
 
         self.bola_Berlim = create_phong_mesh(BerlinExplosaoMassaGeometry(), "Objetos/Texturas/Humano/Berlin_massa.jpg")
         self.bola_Berlim.add(create_phong_mesh(BerlinExplosaoRecheioGeometry(), "Objetos/Texturas/Humano/Berlin_recheio.png"))
+        self.bola_Berlim.translate(0, -2, 0)
         self.scene.add(self.bola_Berlim)
         self.rig.append(MovementRig())
         self.bola_Berlim_index = len(self.rig)-1
@@ -124,7 +149,9 @@ class Example(Base):
         self.humano.add(create_phong_mesh(HumanoDentesGeometry(), "Objetos/Texturas/Humano/Dentes.png"))
         self.humano.add(create_phong_mesh(HumanoLinguaGeometry(), "Objetos/Texturas/Humano/Lingua.png"))
         self.humano.add(create_phong_mesh(HumanoCabeloGeometry(), "Objetos/Texturas/Humano/PretoCabelo.png"))
-        #self.humano.add(create_phong_mesh(HumanoOculosGeometry(), "Objetos/Texturas/Humano/PretoOculos.png"))
+        oculos = create_phong_mesh(HumanoOculosGeometry(), "Objetos/Texturas/Humano/PretoOculos.png")
+        oculos.set_position((0.17, -0.39, 7.72))
+        self.humano.add(oculos)
         self.humano.add(create_phong_mesh(BerlinComerMassaGeometry(), "Objetos/Texturas/Humano/Berlin_massa.jpg"))
         self.humano.add(create_phong_mesh(BerlinComerRecheioGeometry(), "Objetos/Texturas/Humano/Berlin_recheio.png"))
         self.humano.set_position((-20, 0, 0))
@@ -179,7 +206,14 @@ class Example(Base):
         self.cliff = create_lambert_mesh(FalesiaGeometry(), "Objetos/Texturas/Ambiente/cliff.jpg")
         self.scene.add(self.cliff)
 
-
+        black_material = LambertMaterial(
+            texture=Texture(file_name="Objetos/Texturas/Octane/Preto.png"),
+            number_of_light_sources=number_of_lights,
+            use_shadow=True,
+        )
+        self.black = Mesh(RectangleGeometry(width=100, height=100), black_material)
+        self.black.set_position([0.5, 100, 0.5])
+        self.scene.add(self.black)
 
 
         sea_material = LambertMaterial(
@@ -224,45 +258,85 @@ class Example(Base):
         # the global matrix of its child.
         self.directional_light.set_position([0, 2, 0])
 
+        self.rig.append(MovementRig())
+        self.camara_index = len(self.rig) - 1
+        self.rig[self.camara_index].add(self.camera)
 
         self.camera_move = 0.1
         self.rig_size = len(self.rig)
         for i in range(self.rig_size):
             self.scene.add(self.rig[i])
         self.currentObject = 0
+
         self.cameraMovements = []
-        for i in range(180):
-            self.cameraMovements.append([0, 0, -0.011, [-0.002, True], [0, True], [0, True]])
-        for i in range(80):
-            self.cameraMovements.append([0, 0, 0, [0, True], [-math.pi/100, False], [0, True]])
-        for i in range(20):
-            self.cameraMovements.append([-0.03, 0, 0, [0, True], [-math.pi / 100, False], [0, True]])
+        for i in range(240):
+            self.cameraMovements.append([0, 0, -0.0416, [0, True], [0, True], [0, True], 0])
+        for i in range(120):
+            self.cameraMovements.append([0, 0, -0.011, [-math.pi / 4 / 120, True], [0, True], [0, True], 0])
+        self.cameraMovements.append([0, 0, 0, [math.pi / 4, True], [0, True], [0, True], 0])
+        self.cameraMovements.append([-16, 10, -16, [0, True], [-math.pi / 1.3, True], [0, True], 1])
+        self.cameraMovements.append([-16, 10, -16, [-0.5, True], [0, True], [0, True], 1])
+        for i in range(30):
+            self.cameraMovements.append([-16, 10, -16, [0, True], [0, True], [0, True], 1])
+        for i in range(240):
+            self.cameraMovements.append([0, 0, -12 / 240, [0, True], [0, True], [0, True], 0])
+        self.cameraMovements.append([0, 0, 0, [0.5, True], [0, True], [0, True], 0])
+        self.cameraMovements.append([0, 0, 0, [0, True], [math.pi / 1.3, True], [0, True], 0])
+        self.cameraMovements.append([0.5, 0.5, 2, [0, True], [0, True], [0, True], 1])
+        for i in range(210):
+            self.cameraMovements.append([0, 0, 0, [0, True], [2 * math.pi / 210, False], [0, True], 0])
         self.j = 0
 
         print("Troca de objeto no 1, 2, 3 e 4.")
         print("Camera h, j, k, l, u, n, t, g.")
         print("Ojeto w, a, s, d, q, e, r, f, z, x.")
         print("berlin: " + str(self.bola_Berlim_index), "humano: " + str(self.humano_index))
-        print("bola: " + str(self.bola_index), "octane: " + str(self.octane_index))
+        print("bola: " + str(self.bola_index), "octane: " + str(self.octane_index), "camara: " + str(self.camara_index))
+        self.sounds_animation = []
+        self.sounds_to_remove = []
 
         self.play = False
         # move ou rot, object, dist ou angle, time
         # music, time to start, time to end
-        self.animation = [[self.move, self.octane_index, [0.5, 0, 0], 0.5],
+        self.animation = [[self.musica_rocket, 0, 4.5],
+                          [self.musica_rocket, 13.6, 60],
+                          [self.heartbeat_sound, 4.5, 13.6],
+                          [self.explosao_sound, 14.2, 17.2],
+                          [self.motor_sound, 0, 1.5],
+                          [self.motor_sound, 6.6, 7.5],
+                          [self.bater_sound, 0.3, 2.5],
+                          [self.bater_sound, 13.4, 15.6],
+                          [self.move, self.octane_index, [0.5, 0, 0], 0.5],
                           [self.move, self.bola_index, [0, 0, 0], 0.5],
                           [self.move, self.octane_index, [1.1, 0, 0], 1.1],
                           [self.move, self.bola_index, [1.1, 0.8, 0], 0.4],
+                          [self.move, self.camara_index, [0, 0, 0], 0.4],
                           [self.move, self.bola_index, [1.07, 0.5, 0], 0.4],
+                          [self.move, self.camara_index, [2.15, 0.5, 0], 0.4],
                           [self.move, self.bola_index, [1.07, 0.3, 0], 0.8],
+                          [self.move, self.camara_index, [1.07, 0.3, 0], 0.8],
                           [self.move, self.bola_index, [1.07, -0.05, 0], 0.8],
+                          [self.move, self.camara_index, [1.07, -0.05, 0], 0.8],
                           [self.move, self.bola_index, [1.07, -0.1, 0], 1.2],
+                          [self.move, self.camara_index, [1.07, -0.1, 0], 1.2],
                           [self.move, self.bola_index, [1.07, -0.15, 0], 1.5],
+                          [self.move, self.camara_index, [1.07, -0.15, 0], 1.5],
                           [self.move, self.bola_index, [1.07, -0.3, 0], 2],
+                          [self.move, self.camara_index, [1.07, -0.3, 0], 2],
                           [self.move, self.bola_index, [-0.4, -0.2, 0], 0.5],
+                          [self.move, self.camara_index, [-0.4, -0.2, 0], 0.5],
+                          [self.move, self.camara_index, [0, 0, 0], 6.3],
                           [self.move, self.octane_index, [0, 0, 0], 5],
                           [self.move, self.octane_index, [0.7, 0, 0], 0.4],
                           [self.move, self.octane_index, [2.0, 0, 0], 0.6],
                           [self.move, self.octane_index, [0.9, 0.3, 0], 0.5],
+                          [self.rot, self.octane_index, [0, 0, 0], 8.1],
+                          [self.rot, self.octane_index, [0, 0, 30], 1],
+                          [self.rot, self.octane_index, [0, 0, 0], 0.5],
+                          [self.rot, self.octane_index, [0, 0, -10], 4],
+                          [self.rot, self.octane_index, [0, 0, 20], 0.1],
+                          [self.rot, self.octane_index, [0, 0, 0], 0.7],
+                          [self.rot, self.octane_index, [0, 0, 80], 0.2],
                           [self.move, self.bola_index, [-0.5, -0.2, 0], 1.5],
                           [self.move, self.octane_index, [0.9, 0.2, 0], 1.5],
                           [self.move, self.bola_index, [-0.3, -0.1, 0], 4],
@@ -271,42 +345,70 @@ class Example(Base):
                           [self.move, self.octane_index, [0.4, 0.3, 0], 0.8],
                           [self.move, self.bola_index, [0, -1.1, 0], 0],
                           [self.move, self.octane_index, [-3.2, 1.6, 0], 0.5],
+                          [self.move, self.camara_index, [0, 0, 0], 1],
+                          [self.move, self.camara_index, [-1.2, 1.1, 0], 0.8],
+                          [self.rot, self.camara_index, [0, -90, 0], 0.5],
                           [self.move, self.bola_Berlim_index, [0, 0, 0], 14.4],
-                          [self.move, self.bola_Berlim_index, [17, 0, 0], 0],
+                          [self.move, self.bola_Berlim_index, [17, 2, 0], 0],
                           [self.move, self.bola_Berlim_index, [-0.6, 0, 0], 0.5],
                           [self.move, self.octane_index, [-1.9, 0.7, 0], 0.8],
                           [self.move, self.bola_Berlim_index, [-1.7, 1.1, 0], 0.8],
+                          [self.move, self.camara_index, [0, 0, 0], 3],
+                          [self.rot, self.camara_index, [0, 0, 0], 18.5],
+                          [self.rot, self.camara_index, [0, 90, 0], 1],
+                          [self.move, self.camara_index, [-26.4, -0.2, 0], 0],
                           ]
 
     def update(self):
-        if "," in self.input.key_down_list:
-            self.rig[self.octane_index].translate(-self.rig[self.octane_index].global_position[0],
-                                                  -self.rig[self.octane_index].global_position[1],
-                                                  -self.rig[self.octane_index].global_position[2])
-            self.rig[self.bola_index].translate(-self.rig[self.bola_index].global_position[0],
-                                                -self.rig[self.bola_index].global_position[1],
-                                                -self.rig[self.bola_index].global_position[2])
-            self.rig[self.bola_Berlim_index].translate(-self.rig[self.bola_Berlim_index].global_position[0],
-                                                       -self.rig[self.bola_Berlim_index].global_position[1],
-                                                       -self.rig[self.bola_Berlim_index].global_position[2])
+        if self.j == len(self.cameraMovements):
+            self.tick_counter = 0
+            for i in range(self.rig_size):
+                self.rig[i].clear()
+                self.rig[i].reset_translation()
+                self.rig[i].reset_rotation()
+            self.humano.set_position((-20, 0, 0))
+            self.camera.set_position((0.5, 0.5, 2))
+            self.sounds_animation.clear()
+            for i in range(len(self.sounds)):
+                self.sounds[i].stop()
             for i in range(len(self.animation)):
-                if self.animation[i][0] == self.move:
-                    self.rig[self.animation[i][1]].move(self.animation[i][2], self.animation[i][3])
-                if self.animation[i][0] == self.rot:
-                    self.rig[self.animation[i][1]].rotate(self.animation[i][2], self.animation[i][3])
+                if len(self.animation[i]) == 4:
+                    if self.animation[i][0] == self.move:
+                        self.rig[self.animation[i][1]].move(self.animation[i][2], self.animation[i][3])
+                    if self.animation[i][0] == self.rot:
+                        self.rig[self.animation[i][1]].rotate(self.animation[i][2], self.animation[i][3])
+                elif len(self.animation[i]) == 3:
+                    self.sounds_animation.append(self.animation[i])
+            self.j += 1
         if "p" in self.input.key_pressed_list:
+            self.camera.set_position([0.5, 1, 22])
+            self.j = 0
             self.play = True
         if self.play:
             if self.j < len(self.cameraMovements):
                 movimento = self.cameraMovements[self.j]
-                self.camera.translate(movimento[0], movimento[1], movimento[2])
-                self.camera.rotate_x(movimento[3][0], movimento[3][1])
-                self.camera.rotate_y(movimento[4][0], movimento[4][1])
-                self.camera.rotate_z(movimento[5][0], movimento[5][1])
+                if movimento[6] == 0:
+                    self.camera.translate(movimento[0], movimento[1], movimento[2])
+                    self.camera.rotate_x(movimento[3][0], movimento[3][1])
+                    self.camera.rotate_y(movimento[4][0], movimento[4][1])
+                    self.camera.rotate_z(movimento[5][0], movimento[5][1])
+                else:
+                    self.camera.set_position([movimento[0], movimento[1], movimento[2]])
+                    self.camera.rotate_x(movimento[3][0], movimento[3][1])
+                    self.camera.rotate_y(movimento[4][0], movimento[4][1])
+                    self.camera.rotate_z(movimento[5][0], movimento[5][1])
                 self.j += 1
         for i in range(self.rig_size):
             self.rig[i].update(self.input, self.delta_time)
+        #self.camera.look_at(self.bola.global_position)
         self.renderer.render(self.scene, self.camera)
+        for i in range(len(self.sounds_animation)):
+            if self.tick_counter == int(self.sounds_animation[i][1]*60):
+                self.sounds[self.sounds_animation[i][0]].play()
+            if self.tick_counter == int(self.sounds_animation[i][2]*60):
+                self.sounds[self.sounds_animation[i][0]].stop()
+
+
         if "a" in self.input.key_pressed_list:
             self.camera.translate(-self.camera_move,0,0)
         if "left shift" in self.input.key_pressed_list:
@@ -348,17 +450,17 @@ class Example(Base):
         if "l" in self.input.key_pressed_list:
             self.rig[self.currentObject].translate(0,-0.1,0)
         if "k" in self.input.key_pressed_list:
-            self.rig[self.currentObject].rotate_x(0.01, local=False)
+            self.rig[self.currentObject].rotate_x(0.01, local=True)
         if "j" in self.input.key_pressed_list:
-            self.rig[self.currentObject].rotate_x(-0.01, local=False)
+            self.rig[self.currentObject].rotate_x(-0.01, local=True)
         if "y" in self.input.key_pressed_list:
-            self.rig[self.currentObject].rotate_z(0.01, local=False)
+            self.rig[self.currentObject].rotate_z(0.01, local=True)
         if "h" in self.input.key_pressed_list:
-            self.rig[self.currentObject].rotate_z(-0.01, local=False)
+            self.rig[self.currentObject].rotate_z(-0.01, local=True)
         if "u" in self.input.key_pressed_list:
-            self.rig[self.currentObject].rotate_y(0.01, local=False)
+            self.rig[self.currentObject].rotate_y(0.01, local=True)
         if "i" in self.input.key_pressed_list:
-            self.rig[self.currentObject].rotate_y(-0.01, local=False)
+            self.rig[self.currentObject].rotate_y(-0.01, local=True)
         if "escape" in self.input.key_pressed_list:
             self.input._quit = True
         if "1" in self.input.key_down_list:
@@ -370,6 +472,7 @@ class Example(Base):
             y_move = str('y: ') + str(round((self.rig[self.currentObject].global_position[1] - self.yRecorded)*100)/100)
             z_move = str('z: ') + str(round((self.rig[self.currentObject].global_position[2] - self.zRecorded)*100)/100)
             print(x_move, y_move, z_move)
+        self.tick_counter += 1
 
 
 # Instantiate this class and run the program

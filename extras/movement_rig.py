@@ -69,6 +69,26 @@ class MovementRig(Object3D):
         self.z_rotate.append(math.radians(angle[2]))
         self.z_rotate_limit.append(int(time_seconds * 60))
 
+    def clear(self):
+        self.x_move.clear()
+        self.x_move_limit.clear()
+        self.x_rotate.clear()
+        self.x_rotate_limit.clear()
+        self.x_moving = 0
+        self.x_rotating = 0
+        self.y_move.clear()
+        self.y_move_limit.clear()
+        self.y_rotate.clear()
+        self.y_rotate_limit.clear()
+        self.y_moving = 0
+        self.y_rotating = 0
+        self.z_move.clear()
+        self.z_move_limit.clear()
+        self.z_rotate.clear()
+        self.z_rotate_limit.clear()
+        self.z_moving = 0
+        self.z_rotating = 0
+
     def update(self, input_object, delta_time):
         if len(self.x_move) > 0:
             if self.x_move[0] != 0:
@@ -121,9 +141,9 @@ class MovementRig(Object3D):
         if len(self.y_rotate) > 0:
             if self.y_rotate[0] != 0:
                 if self.y_rotate_limit[0] >= 1:
-                    self.rotate_y_around_center(self.y_rotate[0] / self.y_rotate_limit[0])
+                    self.rotate_y(self.y_rotate[0] / self.y_rotate_limit[0], local=True)
                 else:
-                    self.rotate_y_around_center(self.y_rotate[0])
+                    self.rotate_y(self.y_rotate[0], local=True)
             self.y_rotating += 1
             if self.y_rotating >= self.y_rotate_limit[0]:
                 self.y_rotate.pop(0)

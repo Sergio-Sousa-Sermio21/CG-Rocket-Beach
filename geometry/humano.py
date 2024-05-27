@@ -66,7 +66,7 @@ class HumanoOculosGeometry(Geometry):
     def __init__(self, width=1, height=1, depth=1):
         super().__init__()
 
-        position_data = my_obj_reader('Objetos/Modelos/Humano/oculos.obj')
+        position_data = my_obj_reader('Objetos/Modelos/Humano/OculusMelhores.obj')
 
         self.add_attribute("vec3", "vertexPosition", position_data)
         self.add_attribute("vec2", "vertexUV", position_data)

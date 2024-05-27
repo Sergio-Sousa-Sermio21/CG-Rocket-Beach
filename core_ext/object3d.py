@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 from core.matrix import Matrix
 
@@ -98,6 +100,22 @@ class Object3D:
         forward = np.array([0, 0, -1]).astype(float)
         return list(self.rotation_matrix @ forward)
 
+    def rotation_matrix_to_euler_angles(self):
+        sy = math.sqrt(self.rotation_matrix[0, 0] * self.rotation_matrix[0, 0] + self.rotation_matrix[1, 0] * self.rotation_matrix[1, 0])
+
+        singular = sy < 1e-6
+
+        if not singular:
+            x = math.atan2(self.rotation_matrix[2, 1], self.rotation_matrix[2, 2])
+            y = math.atan2(-self.rotation_matrix[2, 0], sy)
+            z = math.atan2(self.rotation_matrix[1, 0], self.rotation_matrix[0, 0])
+        else:
+            x = math.atan2(-self.rotation_matrix[1, 2], self.rotation_matrix[1, 1])
+            y = math.atan2(-self.rotation_matrix[2, 0], sy)
+            z = 0
+
+        return x, y, z
+
     def add(self, child):
         self._children_list.append(child)
         child.parent = self
@@ -127,19 +145,18 @@ class Object3D:
         m = Matrix.make_rotation_y(angle)
         self.apply_matrix(m, local)
 
-    def rotate_y_around_center(self, angle, center=np.array([0, 0, 0])):
-        translation_to_origin = Matrix.make_translation(-center[0], -center[1], -center[2])
-        rotation_matrix = Matrix.make_rotation_x(angle)
-        translation_back = Matrix.make_translation(center[0], center[1], center[2])
-
-        transformation_matrix = translation_back @ rotation_matrix @ translation_to_origin
-
-        self._matrix = transformation_matrix @ self._matrix
-
-
     def rotate_z(self, angle, local=True):
         m = Matrix.make_rotation_z(angle)
         self.apply_matrix(m, local)
+
+    def reset_rotation(self):
+        rotations = self.rotation_matrix_to_euler_angles()
+        self.rotate_x(-rotations[0])
+        self.rotate_y(-rotations[1])
+        self.rotate_z(-rotations[2])
+
+    def reset_translation(self):
+        self.translate(-self.global_position[0], -self.global_position[1], -self.global_position[2])
 
     def scale(self, s, local=True):
         m = Matrix.make_scale(s)
